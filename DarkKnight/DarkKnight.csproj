@@ -43,8 +43,12 @@
   <ItemGroup>
     <Compile Include="core\ClientListen.cs" />
     <Compile Include="core\PacketHandler.cs" />
+    <Compile Include="core\Clients\Register.cs" />
+    <Compile Include="core\Clients\RegisterAbstract.cs" />
     <Compile Include="core\Server.cs" />
     <Compile Include="core\PacketWeb.cs" />
+    <Compile Include="core\Application.cs" />
+    <Compile Include="Crypt\CryptProvider.cs" />
     <Compile Include="DarkKnightAppliaction.cs" />
     <Compile Include="Data\PacketFormatController.cs" />
     <Compile Include="DKAbstractReceiver.cs" />
@@ -53,11 +57,16 @@
     <Compile Include="DKService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Packet.cs" />
+    <Compile Include="Crypt\AbstractCrypt.cs" />
     <Compile Include="Utils\PacketDictionary.cs" />
     <Compile Include="Data\PacketFormat.cs" />
     <Compile Include="Utils\PacketMap.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Configs\network.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

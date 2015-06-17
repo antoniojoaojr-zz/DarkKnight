@@ -1,4 +1,5 @@
 ﻿using DarkKnight.core;
+using DarkKnight.Crypt;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -34,7 +35,7 @@ namespace DarkKnight.Network
         socket,
         websocket
     }
-    public abstract class Client
+    public abstract class Client : CryptProvider
     {
         /// <summary>
         /// The session id of this client
@@ -110,6 +111,21 @@ namespace DarkKnight.Network
         public void Close()
         {
             throw new NotImplementedException();
+        }
+
+        protected byte[] encode(byte[] packet)
+        {
+            return _encode(packet);
+        }
+
+        protected byte[] decode(byte[] packet)
+        {
+            return _decode(packet);
+        }
+
+        protected void registerCrypt<T>(T crypt)
+        {
+            _registerCrypt(crypt);
         }
     }
 }

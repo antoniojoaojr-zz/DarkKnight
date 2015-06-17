@@ -1,4 +1,5 @@
-﻿using DarkKnight.Data;
+﻿using DarkKnight.Crypt;
+using DarkKnight.Data;
 using System;
 
 #region License Information
@@ -45,6 +46,7 @@ namespace DarkKnight.core
 
         public PacketHandler(byte[] packet)
         {
+            // we get original packet
             originalPacket = packet;
 
             // if handler the packet

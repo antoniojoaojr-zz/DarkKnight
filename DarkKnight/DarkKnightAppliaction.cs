@@ -1,5 +1,4 @@
-﻿using DarkKnight.core;
-using System;
+﻿using System;
 
 #region License Information
 /* ************************************************************
@@ -37,7 +36,7 @@ namespace DarkKnight
 
             _callback = setCallback;
 
-            new Server().open(2104);
+            new core.Server().open(2104);
         }
 
         public static DKService send

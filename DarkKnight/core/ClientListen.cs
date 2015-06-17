@@ -1,4 +1,5 @@
-﻿using DarkKnight.Data;
+﻿using DarkKnight.core.Clients;
+using DarkKnight.Data;
 using DarkKnight.Network;
 using DarkKnight.Utils;
 using System;
@@ -67,6 +68,9 @@ namespace DarkKnight.core
 
             // from here we are already processing the package without worrying that we are delaying the arrival of new
 
+            // register the queue information registration of client
+            Registers(listen);
+
             // if size is zero, we do not continue sense, just abandon this method and release the thread
             if (size == 0)
                 return;
@@ -74,10 +78,13 @@ namespace DarkKnight.core
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)
             {
+                byte[] decoded;
                 if (listen.socketLayer == SocketLayer.websocket)
-                    listen.toApplication(new PacketHandler(PacketWeb.decode(received)));
+                    decoded = listen.decode(PacketWeb.decode(received));
                 else
-                    listen.toApplication(new PacketHandler(received));
+                    decoded = listen.decode(received);
+
+                listen.toApplication(new PacketHandler(decoded));
 
                 return;
             }
@@ -98,14 +105,43 @@ namespace DarkKnight.core
             // if we come here is because it was the first received packet,
             // we are sure that we've set the type of layer of SocketLayer that our client is,
             // so we will notify the application which new is connected
-            DarkKnightAppliaction.send.connectionOpened(this);
+            Application.connectionOpened(this);
         }
+
+        /// <summary>
+        /// Restore registor informed by the application, to store object of client
+        /// </summary>
+        /// <param name="listen"></param>
+        private void Registers(ClientListen listen)
+        {
+            // we try get a dequeue of registration
+            RegisterAbstract register = Register.GetValue(listen._ID);
+            // while dequeue of registration not null
+            // we make this
+            while (register != null)
+            {
+                // restore the object type
+                RegisterType type = register.getType;
+                // make selection by type of object
+                switch (type)
+                {
+                    case RegisterType.crypt:
+                        // if is crypt, register the crypt in the client
+                        listen.registerCrypt(register.getAbstract<Object>());
+                        break;
+                }
+
+                // try get a dequeue again of registration
+                register = Register.GetValue(listen._ID);
+            }
+        }
+
 
         /// <summary>
         /// Send the packet to the server appliaction handler and process
         /// </summary>
         /// <param name="packet">Packet to send</param>
-        protected void toApplication(Packet packet)
+        private void toApplication(Packet packet)
         {
             // we make a finally validation of the packet in the server
             // if the packet is invalid, just print a log in the output
@@ -115,22 +151,8 @@ namespace DarkKnight.core
                 return;
             }
 
-            // we try restore a map of packet
-            DKAbstractReceiver callback = PacketDictionary.getmappin(Encoding.UTF8.GetBytes(packet.format.getStringFormat));
-
-            // if map is restored
-            // send the packet to the application to the class mapped
-            // First ReceivedPacket(Client, Packet), finalliy run() to process
-            if (callback != null)
-            {
-                callback.ReceivedPacket(this, packet);
-                callback.run();
-            }
-            else
-            {
-                // otherwise, send the packet to the default service packet handler
-                DarkKnightAppliaction.send.ReceivedPacket(this, packet);
-            }
+            // if allright, send to the application
+            Application.ReceivedPacket(this, packet);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)
@@ -161,7 +183,7 @@ namespace DarkKnight.core
                 // if we have an exception to receive a new package, it means that we have lost the connection with the client
                 // notify this to the application
                 if (listen.socketLayer != SocketLayer.undefined)
-                    DarkKnightAppliaction.send.connectionClosed(listen);
+                    Application.connectionClosed(listen);
             }
         }
     }
