@@ -26,39 +26,16 @@ using System.Collections.Generic;
 
 namespace DarkKnight.Utils
 {
-    class Registors
+    public class PacketMap
     {
-        private Dictionary<byte, DKAbstractReceivable> _callbacksInclude = new Dictionary<byte, DKAbstractReceivable>();
-        private Dictionary<byte, string> _callbacksExclude = new Dictionary<byte, string>();
-
-
-        public Dictionary<byte, DKAbstractReceivable> callbacksInclude
+        public static void add(string packetName, DKAbstractReceivable callback)
         {
-            get { return _callbacksInclude; }
-        }
-
-        public Dictionary<byte, string> callbacksExclude
-        {
-            get { return _callbacksExclude; }
-        }
-
-
-        private static Dictionary<int, Registors> _registors = new Dictionary<int, Registors>();
-
-
-        public static Dictionary<int, Registors> registors
-        {
-            get { return _registors; }
-        }
-
-        public static Registors getRegistor(int ClientId)
-        {
-            if (!Registors.registors.ContainsKey(ClientId))
+            if (packetName.Length > 3)
             {
-                Registors.registors.Add(ClientId, new Registors());
+                throw new Exception("Packages has only three characters name");
             }
 
-            return Registors.registors[ClientId];
+            PacketDictionary.getAllMapping.Add(packetName, callback);
         }
     }
 }

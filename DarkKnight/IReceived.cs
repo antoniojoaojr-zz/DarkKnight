@@ -1,6 +1,6 @@
 ﻿using DarkKnight.Network;
+using DarkKnight.Network;
 using System;
-using System.Threading;
 
 #region License Information
 /* ************************************************************
@@ -27,24 +27,8 @@ using System.Threading;
 
 namespace DarkKnight
 {
-    class DarkKnightDelegate
+    interface IReceived
     {
-        private static bool delegateSetted = false;
-        private static DKService _callback;
-
-        public static void setDelegate(DKService setCallback)
-        {
-            if (delegateSetted)
-                throw new Exception("only one DKService inheritance is allowed");
-
-            _callback = setCallback;
-
-            new Server().open(2104);
-        }
-
-        public static DKService callback
-        {
-            get { return _callback; }
-        }
+        void ReceivedPacket(DKClient client, Packet buffer);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -23,24 +24,33 @@
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Utils
+namespace DarkKnight.Network
 {
     public class Packet
     {
-        protected string _key;
-        protected int _length;
+        /// <summary>
+        /// The name of this packet
+        /// </summary>
+        protected string _name = "???";
+        /// <summary>
+        /// The length of this packet
+        /// </summary>
+        protected int _length = 0;
+        /// <summary>
+        /// The data to process of this packet
+        /// </summary>
         protected byte[] _packet;
 
         /// <summary>
-        /// Gets the key of the packet
+        /// Get the name of this packet
         /// </summary>
-        public string key
+        public string name
         {
-            get { return _key; }
+            get { return _name; }
         }
 
         /// <summary>
-        /// Gets the length of the packet
+        /// Get the length of this packet
         /// </summary>
         public int length
         {
@@ -48,12 +58,11 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Gets the packet in array of byte
+        /// Get the byte array of data to process of this packet
         /// </summary>
         public byte[] packet
         {
             get { return _packet; }
         }
-
     }
 }
