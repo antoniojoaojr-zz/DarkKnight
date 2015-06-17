@@ -1,6 +1,4 @@
-﻿using DarkKnight.Network;
-using DarkKnight.Network;
-using System;
+﻿using System;
 
 #region License Information
 /* ************************************************************
@@ -25,20 +23,34 @@ using System;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight
+namespace DarkKnight.Data
 {
-    public abstract class DKAbstractReceivable : IReceived
-    {/// <summary>
-        /// Is called when the buffer is ready for reading
+    public class Packet
+    {
+        /// <summary>
+        /// The format of this packet
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="buffer"></param>
-        public abstract void ReceivedPacket(DKClient client, Packet buffer);
+        protected PacketFormat _format = new PacketFormatController('?', '?', '?');
 
         /// <summary>
-        /// Is called after the method ReceivablePacket
+        /// The data to process of this packet
         /// </summary>
-        public abstract void run();
+        protected byte[] _packet;
 
+        /// <summary>
+        /// Get the name of this packet
+        /// </summary>
+        public PacketFormat format
+        {
+            get { return _format; }
+        }
+
+        /// <summary>
+        /// Get the byte array of data to process of this packet
+        /// </summary>
+        public byte[] data
+        {
+            get { return _packet; }
+        }
     }
 }

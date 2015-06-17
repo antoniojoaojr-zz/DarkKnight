@@ -28,12 +28,6 @@ using System.Net.Sockets;
 
 namespace DarkKnight.core
 {
-    enum SocketLayer
-    {
-        undefined,
-        socket,
-        websocket
-    }
     class Server
     {
         private int nextClientId = 1000;
@@ -52,13 +46,13 @@ namespace DarkKnight.core
                     throw new NetworkInformationException();
             }
 
-            // create the socket server
+            // create the socket object to accept tcp stream
             Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            // serve accept connection for any ip address (local and external) on the port specified
+            // put the socket to accept connections from any IP on the specified port
             server.Bind(new IPEndPoint(IPAddress.Any, port));
-            // listen max 1000 socket incoming
-            server.Listen(1000);
-            // call asynchronius new connection
+            // we setting maximum number of sockets in line to enter the server
+            server.Listen(50);
+            // begin to list new connections asynchronous
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
         }
 
@@ -70,14 +64,13 @@ namespace DarkKnight.core
         {
             // restore the socket object
             Socket server = (Socket)Result.AsyncState;
-            // call asynchronius for accept more connections
+
+            // after we recover the object, release to accept more connections asynchronous
+            // so we can optimize the queue requests for connection
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
 
-            // add new channel of server and client connected
-            ClientListen newConnection = new ClientListen((Socket)server.EndAccept(Result), nextClientId++);
-
-            // delegate the service we have a new client connected
-            DarkKnightAppliaction.send.newConnection(newConnection);
+            // we add the new connected client to the listener channel
+            new ClientListen((Socket)server.EndAccept(Result), nextClientId++);
         }
     }
 }

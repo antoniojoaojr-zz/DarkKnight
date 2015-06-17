@@ -1,4 +1,4 @@
-﻿using DarkKnight.Network;
+﻿using DarkKnight.Data;
 using DarkKnight.Network;
 using System;
 
@@ -29,6 +29,6 @@ namespace DarkKnight
 {
     interface IReceived
     {
-        void ReceivedPacket(DKClient client, Packet buffer);
+        void ReceivedPacket(Client client, Packet buffer);
     }
 }

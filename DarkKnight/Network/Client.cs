@@ -1,9 +1,5 @@
 ﻿using DarkKnight.core;
-using DarkKnight.Network;
-using DarkKnight.Network;
-using DarkKnight.Utils;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
@@ -32,7 +28,13 @@ using System.Net.Sockets;
 
 namespace DarkKnight.Network
 {
-    public abstract class DKClient
+    public enum SocketLayer
+    {
+        undefined,
+        socket,
+        websocket
+    }
+    public abstract class Client
     {
         /// <summary>
         /// The session id of this client
@@ -66,7 +68,7 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
-        /// Send a integer to the client
+        /// Send a integer 32-bits to the client
         /// </summary>
         /// <param name="toSend">The integer to send</param>
         public void SendInt(int toSend)
@@ -77,7 +79,7 @@ namespace DarkKnight.Network
         /// <summary>
         /// Send a byte 8-bits to the client
         /// </summary>
-        /// <param name="toSend">The bit to send</param>
+        /// <param name="toSend">The byte to send</param>
         public void Send(byte toSend)
         {
             throw new NotImplementedException();
@@ -101,36 +103,13 @@ namespace DarkKnight.Network
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Close the connection with the client
+        /// Call 'connectionClosed' of your application that extends the DKService when the connection is closed successfully
+        /// </summary>
         public void Close()
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Send the packet to the server appliaction handler and process
-        /// </summary>
-        /// <param name="packet">Packet to send</param>
-        protected void packetToApplication(Packet packet)
-        {
-            if (packet.name == "???" && packet.length == 0)
-            {
-                Console.WriteLine("Client [" + this.IPAddress.ToString() + "] sended a invalid package");
-                return;
-            }
-
-            DKAbstractReceivable callback = PacketDictionary.getmappin(packet.name);
-
-            if (callback != null)
-            {
-                callback.ReceivedPacket(this, packet);
-                callback.run();
-            }
-            else
-            {
-                DarkKnightAppliaction.send.ReceivedPacket(this, packet);
-            }
-
         }
     }
 }

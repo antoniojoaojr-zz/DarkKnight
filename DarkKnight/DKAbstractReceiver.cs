@@ -1,5 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using DarkKnight.Data;
+using DarkKnight.Network;
+using System;
 
 #region License Information
 /* ************************************************************
@@ -24,45 +25,20 @@ using System.Text;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Network
+namespace DarkKnight
 {
-    public class Packet
+    public abstract class DKAbstractReceiver : IReceived
     {
         /// <summary>
-        /// The name of this packet
+        /// Is called when the buffer is ready for reading
         /// </summary>
-        protected string _name = "???";
-        /// <summary>
-        /// The length of this packet
-        /// </summary>
-        protected int _length = 0;
-        /// <summary>
-        /// The data to process of this packet
-        /// </summary>
-        protected byte[] _packet;
+        /// <param name="client"></param>
+        /// <param name="buffer"></param>
+        public abstract void ReceivedPacket(Client client, Packet buffer);
 
         /// <summary>
-        /// Get the name of this packet
+        /// Is called after the method ReceivablePacket
         /// </summary>
-        public string name
-        {
-            get { return _name; }
-        }
-
-        /// <summary>
-        /// Get the length of this packet
-        /// </summary>
-        public int length
-        {
-            get { return _length; }
-        }
-
-        /// <summary>
-        /// Get the byte array of data to process of this packet
-        /// </summary>
-        public byte[] packet
-        {
-            get { return _packet; }
-        }
+        public abstract void run();
     }
 }

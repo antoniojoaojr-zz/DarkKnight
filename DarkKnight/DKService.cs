@@ -1,4 +1,5 @@
-﻿using DarkKnight.Network;
+﻿using DarkKnight.Data;
+using DarkKnight.Network;
 using System;
 
 #region License Information
@@ -37,19 +38,19 @@ namespace DarkKnight
         /// Is called when new client is connected to the server
         /// </summary>
         /// <param name="client"></param>
-        abstract public void newConnection(DKClient client);
+        abstract public void connectionOpened(Client client);
 
         /// <summary>
         /// Is called when received a new packet not registered from a client
         /// </summary>
         /// <param name="client"></param>
-        abstract public void ReceivedPacket(DKClient client, Network.Packet buffer);
+        abstract public void ReceivedPacket(Client client, Data.Packet buffer);
 
         /// <summary>
         /// Is called when a client closing the connection with the server
         /// </summary>
         /// <param name="client"></param>
-        abstract public void connectionClosed(DKClient client);
+        abstract public void connectionClosed(Client client);
 
 
     }

@@ -1,7 +1,5 @@
-﻿using DarkKnight.Network;
-using DarkKnight.Network;
+﻿using DarkKnight.Data;
 using System;
-using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -40,10 +38,14 @@ namespace DarkKnight.core
         /// </summary>
         private int lengthPosition = 3;
 
+        /// <summary>
+        /// The length of the data to process the packet
+        /// </summary>
+        private int length = 0;
+
         public PacketHandler(byte[] packet)
         {
             originalPacket = packet;
-
 
             // if handler the packet
             if (handler())
@@ -53,7 +55,14 @@ namespace DarkKnight.core
             }
         }
 
-
+        /// <summary>
+        /// We check whether the packet is a valid packet seeing its reporting rules
+        /// First we find the minimum size
+        /// Then also we check to see if it is greater than the minimum size, and if this is true
+        /// We verify that it correctly informs the data size that the package stores to be processed.
+        /// If all this corretado then qualify the package as valid to go to apply and be treated as the application requires.
+        /// </summary>
+        /// <returns>True if packet is valid otherwise false</returns>
         private bool handler()
         {
             // the min length of the packet is 3
@@ -70,40 +79,59 @@ namespace DarkKnight.core
                 // the length information finish when the packet in lengthPosition is equal 0
                 do
                 {
-                    _length += originalPacket[lengthPosition];
+                    length += originalPacket[lengthPosition];
                     lengthPosition++;
 
                     // if the lengthPosition is equal or bigger of packet length
-                    // have a error in the packet, discard the packet returning false
+                    // is a invalid packet, we discard the packet returning false
                     if (lengthPosition >= originalPacket.Length)
                         return false;
 
                 } while (originalPacket[lengthPosition] > 0);
 
                 // we check if the package have the same length readable
-                // if not the packet is invalid and discard then
-                if (originalPacket.Length != _length + lengthPosition++)
+                // if not, the packet is invalid and discard
+                if (originalPacket.Length != length + lengthPosition++)
                     return false;
+            }
+
+
+            // if the sums of the format positions is nonzero, we have a new format for packet
+            if (originalPacket[0] + originalPacket[1] + originalPacket[2] != 0)
+            {
+                try
+                {
+                    // here we try to give the new format to the package
+                    Data.PacketFormat format = new Data.PacketFormatController((char)originalPacket[0], (char)originalPacket[1], (char)originalPacket[2]);
+
+                    // we got here without exception the format is valid
+                    _format = format;
+                }
+                catch
+                {
+                    // if we can not give the new format to the package, then we define the package is invalid
+                    return false;
+                }
             }
 
             // the packet received have the specifications to go to the process data
             return true;
         }
 
+        /// <summary>
+        /// According to the handler() information, we feed the Packet class with the data
+        /// </summary>
         private void filter()
         {
-            // if the sums of the name positions is nonzero, we have a new name for packet
-            if (originalPacket[0] + originalPacket[1] + originalPacket[2] != 0)
-            {
-                _name = Encoding.UTF8.GetString(originalPacket, 0, 3);
-            }
+            // if length is zero, we have nothing to process here
+            if (length == 0)
+                return;
 
             // we create a array of bytes in the size of the length to read
-            _packet = new byte[_length];
+            _packet = new byte[length];
 
             // converting the original packet to the data of a packet to process
-            for (int i = 0; i < _packet.Length; i++)
-                _packet[i] = originalPacket[1 - lengthPosition++];
+            Array.Copy(originalPacket, lengthPosition, _packet, 0, _packet.Length);
         }
     }
 }

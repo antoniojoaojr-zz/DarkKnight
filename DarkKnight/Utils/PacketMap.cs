@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DarkKnight.Data;
+using System;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -28,14 +29,19 @@ namespace DarkKnight.Utils
 {
     public class PacketMap
     {
-        public static void add(string packetName, DKAbstractReceivable callback)
+        /// <summary>
+        /// Add a specific package to be received in a specific class
+        /// This means that every time a client sends this packet to the server, 
+        /// we will call the class specified to process the packet. 
+        /// The call will be in ReceivedPacket(DKClient, Packet) method that belongs to DKAbstractReceiver class that must be the parent class.
+        /// After the call ReceivedPacket(DKClient, Packet), the server calls the run() method. 
+        /// So the application can work with the specified package received in a specified class
+        /// </summary>
+        /// <param name="format">The format of the package</param>
+        /// <param name="callback">The class to be call</param>
+        public static void add(PacketFormat format, DKAbstractReceiver callback)
         {
-            if (packetName.Length > 3)
-            {
-                throw new Exception("Packages has only three characters name");
-            }
-
-            PacketDictionary.getAllMapping.Add(packetName, callback);
+            PacketDictionary.getAllMapping.Add(Encoding.UTF8.GetBytes(format.getStringFormat), callback);
         }
     }
 }

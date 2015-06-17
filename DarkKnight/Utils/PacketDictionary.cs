@@ -28,28 +28,35 @@ namespace DarkKnight.Utils
 {
     class PacketDictionary
     {
-        private static Dictionary<string, DKAbstractReceivable> packetMapped = new Dictionary<string, DKAbstractReceivable>();
+        private static Dictionary<byte[], DKAbstractReceiver> packetMapped = new Dictionary<byte[], DKAbstractReceiver>();
 
-        public static DKAbstractReceivable getmappin(string packetName)
+        /// <summary>
+        /// We try to recover a DKAbstractReceiver object with the specified byte format
+        /// </summary>
+        /// <param name="packetFormat">array of byte specified</param>
+        /// <returns>The DKAbstractReceiver object</returns>
+        public static DKAbstractReceiver getmappin(byte[] packetFormat)
         {
-            if (!packetMapped.ContainsKey(packetName))
+            if (!packetMapped.ContainsKey(packetFormat))
                 return null;
 
-            return packetMapped[packetName];
+            return packetMapped[packetFormat];
         }
 
-
-        public static void mappin(string packetName, DKAbstractReceivable callback)
+        /// <summary>
+        /// Adds a new DKAbstractReceiver object with the specified key in byte format
+        /// </summary>
+        /// <param name="packetFormat">The array of byte to the key</param>
+        /// <param name="callback">The DKAbstractReceiver</param>
+        public static void mappin(byte[] packetFormat, DKAbstractReceiver callback)
         {
-            if (packetName.Length > 3)
-            {
-                throw new Exception("Packages has only three characters name");
-            }
-
-            packetMapped.Add(packetName, callback);
+            packetMapped.Add(packetFormat, callback);
         }
 
-        public static Dictionary<string, DKAbstractReceivable> getAllMapping
+        /// <summary>
+        /// Gets the Dictionary of packetMapped
+        /// </summary>
+        public static Dictionary<byte[], DKAbstractReceiver> getAllMapping
         {
             get { return packetMapped; }
         }

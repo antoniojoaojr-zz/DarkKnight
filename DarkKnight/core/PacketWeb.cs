@@ -30,8 +30,17 @@ namespace DarkKnight.core
 {
     class PacketWeb
     {
+        /// <summary>
+        /// Default guid of the webscokets
+        /// </summary>
         private static string guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
+        /// <summary>
+        /// This method check the package received is a WebSocket packet with auth information
+        /// If true, we captured the key sent by websocket and do authentication, return the packet authentication into a byte array
+        /// </summary>
+        /// <param name="_packet"></param>
+        /// <returns>array of bytes</returns>
         public static byte[] auth(byte[] _packet)
         {
             string receivable = Encoding.UTF8.GetString(_packet, 0, _packet.Length);
@@ -52,6 +61,11 @@ namespace DarkKnight.core
 
         }
 
+        /// <summary>
+        /// We decoded a packet reveived by a websocket
+        /// </summary>
+        /// <param name="_packet">array of byte to the decode</param>
+        /// <returns>array of byte of the packet decoded</returns>
         public static byte[] decode(byte[] _packet)
         {
             int second = _packet[1] & 127;
@@ -79,6 +93,11 @@ namespace DarkKnight.core
             return decode;
         }
 
+        /// <summary>
+        /// We encode one byte array to be sent to a websocket
+        /// </summary>
+        /// <param name="_packet">array of byte to the encode</param>
+        /// <returns>array of byte of the packet encoded</returns>
         public static byte[] encode(byte[] _packet)
         {
             byte[] send;

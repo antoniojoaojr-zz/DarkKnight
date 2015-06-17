@@ -1,5 +1,4 @@
-﻿using DarkKnight.core;
-using System;
+﻿using System;
 
 #region License Information
 /* ************************************************************
@@ -24,25 +23,41 @@ using System;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight
+namespace DarkKnight.Data
 {
-    class DarkKnightAppliaction
+    /// <summary>
+    /// Class represents the format of a packet
+    /// </summary>
+    public abstract class PacketFormat
     {
-        private static DKService _callback = null;
+        protected string format = null;
 
-        public static void setApplication(DKService setCallback)
+        /// <summary>
+        /// Gets the packet format in a string
+        /// </summary>
+        public string getStringFormat
         {
-            if (_callback != null)
-                throw new Exception("Only one extension of DKService is allowed");
+            get
+            {
+                if (format == null)
+                    throw new Exception("The format is not setted");
 
-            _callback = setCallback;
-
-            new Server().open(2104);
+                return format;
+            }
         }
 
-        public static DKService send
+        /// <summary>
+        /// Gets the packet format in a array of char
+        /// </summary>
+        public char[] getCharArrayFormat
         {
-            get { return _callback; }
+            get
+            {
+                if (format == null)
+                    throw new Exception("the format is not setted");
+
+                return format.ToCharArray();
+            }
         }
     }
 }
