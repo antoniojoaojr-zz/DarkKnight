@@ -41,17 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DarkKnightDelegate.cs" />
+    <Compile Include="core\ClientListen.cs" />
+    <Compile Include="core\PacketHandler.cs" />
+    <Compile Include="core\Server.cs" />
+    <Compile Include="core\PacketWeb.cs" />
+    <Compile Include="DarkKnightAppliaction.cs" />
     <Compile Include="DKAbstractReceivable.cs" />
-    <Compile Include="DKBuffer.cs" />
+    <Compile Include="IReceived.cs" />
     <Compile Include="Network\DKClient.cs" />
     <Compile Include="DKService.cs" />
-    <Compile Include="Network\BufferState.cs" />
-    <Compile Include="Network\ClientListen.cs" />
-    <Compile Include="Network\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Packet.cs" />
-    <Compile Include="Utils\Registors.cs" />
+    <Compile Include="Network\Packet.cs" />
+    <Compile Include="Utils\PacketDictionary.cs" />
+    <Compile Include="Utils\PacketMap.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

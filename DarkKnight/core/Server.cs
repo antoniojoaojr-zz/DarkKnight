@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-
 #region License Information
 /* ************************************************************
  * 
@@ -27,11 +26,17 @@ using System.Net.Sockets;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Network
+namespace DarkKnight.core
 {
+    enum SocketLayer
+    {
+        undefined,
+        socket,
+        websocket
+    }
     class Server
     {
-        private int client_counter = 1000;
+        private int nextClientId = 1000;
 
         /// <summary>
         /// The method is responsible for starting a server on a specific port
@@ -69,10 +74,10 @@ namespace DarkKnight.Network
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
 
             // add new channel of server and client connected
-            ClientListen newConnection = new ClientListen((Socket)server.EndAccept(Result), client_counter++);
+            ClientListen newConnection = new ClientListen((Socket)server.EndAccept(Result), nextClientId++);
 
-            DarkKnightDelegate.callback.newConnection(newConnection);
+            // delegate the service we have a new client connected
+            DarkKnightAppliaction.send.newConnection(newConnection);
         }
-
     }
 }

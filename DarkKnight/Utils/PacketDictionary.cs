@@ -1,6 +1,5 @@
-﻿using DarkKnight.Network;
-using DarkKnight.Network;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 #region License Information
 /* ************************************************************
@@ -25,20 +24,34 @@ using System;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight
+namespace DarkKnight.Utils
 {
-    public abstract class DKAbstractReceivable : IReceived
-    {/// <summary>
-        /// Is called when the buffer is ready for reading
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="buffer"></param>
-        public abstract void ReceivedPacket(DKClient client, Packet buffer);
+    class PacketDictionary
+    {
+        private static Dictionary<string, DKAbstractReceivable> packetMapped = new Dictionary<string, DKAbstractReceivable>();
 
-        /// <summary>
-        /// Is called after the method ReceivablePacket
-        /// </summary>
-        public abstract void run();
+        public static DKAbstractReceivable getmappin(string packetName)
+        {
+            if (!packetMapped.ContainsKey(packetName))
+                return null;
 
+            return packetMapped[packetName];
+        }
+
+
+        public static void mappin(string packetName, DKAbstractReceivable callback)
+        {
+            if (packetName.Length > 3)
+            {
+                throw new Exception("Packages has only three characters name");
+            }
+
+            packetMapped.Add(packetName, callback);
+        }
+
+        public static Dictionary<string, DKAbstractReceivable> getAllMapping
+        {
+            get { return packetMapped; }
+        }
     }
 }

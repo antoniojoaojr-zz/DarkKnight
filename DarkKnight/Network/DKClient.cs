@@ -1,4 +1,6 @@
-﻿using DarkKnight.Network;
+﻿using DarkKnight.core;
+using DarkKnight.Network;
+using DarkKnight.Network;
 using DarkKnight.Utils;
 using System;
 using System.Collections.Generic;
@@ -30,11 +32,22 @@ using System.Net.Sockets;
 
 namespace DarkKnight.Network
 {
-    public abstract class DKClient : DKBuffer
+    public abstract class DKClient
     {
+        /// <summary>
+        /// The session id of this client
+        /// </summary>
         protected int _ID;
+
+        /// <summary>
+        /// The socket object of this client
+        /// </summary>
         protected Socket client;
-        protected Dictionary<byte, DKAbstractReceivable> callbackRecorded = new Dictionary<byte, DKAbstractReceivable>();
+
+        /// <summary>
+        /// The layer of the socket is work
+        /// </summary>
+        protected SocketLayer socketLayer = SocketLayer.undefined;
 
         /// <summary>
         /// Gets the IPAddress object of client connected
@@ -58,6 +71,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">The integer to send</param>
         public void SendInt(int toSend)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -66,6 +80,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">The bit to send</param>
         public void Send(byte toSend)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -74,6 +89,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -82,50 +98,39 @@ namespace DarkKnight.Network
         /// <param name="toSend">The string to send</param>
         public void SendString(string toSend)
         {
+            throw new NotImplementedException();
         }
 
 
         public void Close()
         {
+            throw new NotImplementedException();
         }
 
-        public void RegisterCallback(byte identifier, DKAbstractReceivable receiver)
+        /// <summary>
+        /// Send the packet to the server appliaction handler and process
+        /// </summary>
+        /// <param name="packet">Packet to send</param>
+        protected void packetToApplication(Packet packet)
         {
-            Registors registors = Registors.getRegistor(_ID);
-
-            registors.callbacksInclude[identifier] = receiver;
-        }
-
-        public void DeleteCallback(byte identifier)
-        {
-            Registors registors = Registors.getRegistor(_ID);
-            registors.callbacksExclude[identifier] = null;
-        }
-
-
-
-        protected void setBuffer(byte[] buffer, int size)
-        {
-            base.setBuffer(buffer, size);
-        }
-
-        protected void UpdateRegistor()
-        {
-            Registors registors = Registors.getRegistor(_ID);
-
-            foreach (KeyValuePair<byte, DKAbstractReceivable> pair in registors.callbacksInclude)
+            if (packet.name == "???" && packet.length == 0)
             {
-                callbackRecorded[pair.Key] = pair.Value;
+                Console.WriteLine("Client [" + this.IPAddress.ToString() + "] sended a invalid package");
+                return;
             }
 
-            registors.callbacksInclude.Clear();
+            DKAbstractReceivable callback = PacketDictionary.getmappin(packet.name);
 
-            foreach (KeyValuePair<byte, string> pair in registors.callbacksExclude)
+            if (callback != null)
             {
-                callbackRecorded.Remove(pair.Key);
+                callback.ReceivedPacket(this, packet);
+                callback.run();
+            }
+            else
+            {
+                DarkKnightAppliaction.send.ReceivedPacket(this, packet);
             }
 
-            registors.callbacksExclude.Clear();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkKnight.core;
+using System;
 
 #region License Information
 /* ************************************************************
@@ -23,11 +24,26 @@
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Network
+namespace DarkKnight
 {
-    enum BufferState
+    class DarkKnightAppliaction
     {
-        CREATED,
-        SEALED
+        private static bool delegateSetted = false;
+        private static DKService _callback;
+
+        public static void setApplication(DKService setCallback)
+        {
+            if (delegateSetted)
+                throw new Exception("only one DKService inheritance is allowed");
+
+            _callback = setCallback;
+            delegateSetted = true;
+            new Server().open(2104);
+        }
+
+        public static DKService send
+        {
+            get { return _callback; }
+        }
     }
 }

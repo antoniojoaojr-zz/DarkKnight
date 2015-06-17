@@ -26,11 +26,11 @@ using System;
 
 namespace DarkKnight
 {
-    public abstract class DKService
+    public abstract class DKService : IReceived
     {
         public DKService()
         {
-            DarkKnightDelegate.setDelegate(this);
+            DarkKnightAppliaction.setApplication(this);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace DarkKnight
         /// Is called when received a new packet not registered from a client
         /// </summary>
         /// <param name="client"></param>
-        abstract public void newPacket(DKClient client, DKBuffer buffer);
+        abstract public void ReceivedPacket(DKClient client, Network.Packet buffer);
 
         /// <summary>
         /// Is called when a client closing the connection with the server
