@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -26,58 +25,35 @@ using System.Text;
 
 namespace DarkKnight.Utils
 {
-    class Packet
+    public class Packet
     {
-        private string _key;
-        private int _length;
-        private byte[] _packet;
-        private int _startPosition;
+        protected string _key;
+        protected int _length;
+        protected byte[] _packet;
 
-        public Packet(byte[] packet)
+        /// <summary>
+        /// Gets the key of the packet
+        /// </summary>
+        public string key
         {
-            if (!CheckPackage(packet))
-            {
-                _key = "????";
-                return;
-            }
-
-            _key = Encoding.UTF8.GetString(packet, 0, 3);
-            if (packet.Length > 3)
-            {
-                for (int i = 0; i < _length; i++)
-                {
-                    _packet[i] = packet[_startPosition++];
-                }
-            }
+            get { return _key; }
         }
 
-
-        private bool CheckPackage(byte[] packet)
+        /// <summary>
+        /// Gets the length of the packet
+        /// </summary>
+        public int length
         {
-            if (packet.Length < 3)
-                return false;
-
-            if (packet.Length > 3)
-            {
-                int length = 0;
-                int lPosition = 3;
-
-                do
-                {
-                    length += packet[lPosition];
-                    lPosition++;
-                } while (packet[lPosition] == 127);
-
-                if (packet.Length < length + lPosition + 1)
-                {
-                    return false;
-                }
-
-                _length = length;
-                _startPosition = lPosition;
-            }
-
-            return true;
+            get { return _length; }
         }
+
+        /// <summary>
+        /// Gets the packet in array of byte
+        /// </summary>
+        public byte[] packet
+        {
+            get { return _packet; }
+        }
+
     }
 }
