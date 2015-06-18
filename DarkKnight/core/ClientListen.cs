@@ -84,7 +84,7 @@ namespace DarkKnight.core
                 else
                     decoded = listen.decode(received);
 
-                listen.toApplication(new PacketHandler(decoded));
+                listen.toApplication(listen, new PacketHandler(decoded));
 
                 return;
             }
@@ -105,7 +105,7 @@ namespace DarkKnight.core
             // if we come here is because it was the first received packet,
             // we are sure that we've set the type of layer of SocketLayer that our client is,
             // so we will notify the application which new is connected
-            Application.connectionOpened(this);
+            Application.connectionOpened(listen);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace DarkKnight.core
         /// Send the packet to the server appliaction handler and process
         /// </summary>
         /// <param name="packet">Packet to send</param>
-        private void toApplication(Packet packet)
+        private void toApplication(ClientListen listen, Packet packet)
         {
             // we make a finally validation of the packet in the server
             // if the packet is invalid, just print a log in the output
@@ -152,7 +152,7 @@ namespace DarkKnight.core
             }
 
             // if allright, send to the application
-            Application.ReceivedPacket(this, packet);
+            Application.ReceivedPacket(listen, packet);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)

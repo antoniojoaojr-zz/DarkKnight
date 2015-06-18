@@ -104,7 +104,7 @@ namespace DarkKnight.core
                 try
                 {
                     // here we try to give the new format to the package
-                    Data.PacketFormat format = new Data.PacketFormatController((char)originalPacket[0], (char)originalPacket[1], (char)originalPacket[2]);
+                    PacketFormat format = new PacketFormatController((char)originalPacket[0], (char)originalPacket[1], (char)originalPacket[2]);
 
                     // we got here without exception the format is valid
                     _format = format;
