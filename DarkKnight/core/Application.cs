@@ -38,7 +38,7 @@ namespace DarkKnight.core
         {
             try
             {
-                DarkKnightAppliaction.send.connectionOpened(client);
+                DarkKnightAppliaction.callback.GetType().GetMethod("connectionOpened").Invoke(DarkKnightAppliaction.callback, new object[] { client });
             }
             catch
             {
@@ -63,7 +63,7 @@ namespace DarkKnight.core
                 else
                 {
                     // otherwise, send the packet to the default service packet handler
-                    DarkKnightAppliaction.send.ReceivedPacket(client, buffer);
+                    DarkKnightAppliaction.callback.GetType().GetMethod("ReceivedPacket").Invoke(DarkKnightAppliaction.callback, new object[] { client, buffer });
                 }
             }
             catch
@@ -76,7 +76,7 @@ namespace DarkKnight.core
         {
             try
             {
-                DarkKnightAppliaction.send.connectionClosed(client);
+                DarkKnightAppliaction.callback.GetType().GetMethod("connectionClosed").Invoke(DarkKnightAppliaction.callback, new object[] { client });
             }
             catch
             {

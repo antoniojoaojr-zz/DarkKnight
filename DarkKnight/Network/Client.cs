@@ -1,8 +1,10 @@
 ﻿using DarkKnight.core;
 using DarkKnight.Crypt;
+using DarkKnight.Data;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -43,9 +45,25 @@ namespace DarkKnight.Network
         protected int _ID;
 
         /// <summary>
+        /// The layer provider to server sends data for client
+        /// </summary>
+        private DataTransport transportLayer;
+
+        /// <summary>
         /// The socket object of this client
         /// </summary>
-        protected Socket client;
+        protected Socket client
+        {
+            get
+            {
+                return client;
+            }
+            set
+            {
+                transportLayer = new DataTransport(this, value);
+                client = value;
+            }
+        }
 
         /// <summary>
         /// The layer of the socket is work
@@ -69,30 +87,12 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
-        /// Send a integer 32-bits to the client
-        /// </summary>
-        /// <param name="toSend">The integer to send</param>
-        public void SendInt(int toSend)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Send a byte 8-bits to the client
-        /// </summary>
-        /// <param name="toSend">The byte to send</param>
-        public void Send(byte toSend)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Send a array of bytes 8-bits to the client
         /// </summary>
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
         {
-            throw new NotImplementedException();
+            transportLayer.Send(new PacketCreator(toSend));
         }
 
         /// <summary>
@@ -101,7 +101,36 @@ namespace DarkKnight.Network
         /// <param name="toSend">The string to send</param>
         public void SendString(string toSend)
         {
-            throw new NotImplementedException();
+            Send(Encoding.UTF8.GetBytes(toSend));
+        }
+
+        /// <summary>
+        /// Send a mapped with format to the client
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        public void SendFormated(PacketFormat format)
+        {
+            transportLayer.Send(new PacketCreator(format, new byte[] { }));
+        }
+
+        /// <summary>
+        /// Send a array of bytes 8-bits mapped with format to the client
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="toSend">the int to send</param>
+        public void SendFormated(PacketFormat format, byte[] toSend)
+        {
+            transportLayer.Send(new PacketCreator(format, toSend));
+        }
+
+        /// <summary>
+        ///  Send a UTF8 String mapped with format to the client
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="toSend">the string to send</param>
+        public void SendFormatedString(PacketFormat format, string toSend)
+        {
+            SendFormated(format, Encoding.UTF8.GetBytes(toSend));
         }
 
         /// <summary>
@@ -113,19 +142,5 @@ namespace DarkKnight.Network
             throw new NotImplementedException();
         }
 
-        protected byte[] encode(byte[] packet)
-        {
-            return _encode(packet);
-        }
-
-        protected byte[] decode(byte[] packet)
-        {
-            return _decode(packet);
-        }
-
-        protected void registerCrypt<T>(T crypt)
-        {
-            _registerCrypt(crypt);
-        }
     }
 }

@@ -27,9 +27,9 @@ namespace DarkKnight
 {
     class DarkKnightAppliaction
     {
-        private static DKService _callback = null;
+        private static Object _callback = null;
 
-        public static void setApplication(DKService setCallback)
+        public static void setApplication<T>(T setCallback)
         {
             if (_callback != null)
                 throw new Exception("Only one extension of DKService is allowed");
@@ -39,9 +39,10 @@ namespace DarkKnight
             new core.Server().open(2104);
         }
 
-        public static DKService send
+        public static Object callback
         {
             get { return _callback; }
         }
+
     }
 }

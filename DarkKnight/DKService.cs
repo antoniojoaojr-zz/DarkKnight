@@ -29,11 +29,6 @@ namespace DarkKnight
 {
     public abstract class DKService : IReceived
     {
-        public DKService()
-        {
-            DarkKnightAppliaction.setApplication(this);
-        }
-
         /// <summary>
         /// Is called when new client is connected to the server
         /// </summary>
@@ -52,6 +47,18 @@ namespace DarkKnight
         /// <param name="client"></param>
         abstract public void connectionClosed(Client client);
 
+        /// <summary>
+        /// Set the application class
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="application"></param>
+        protected void setApplication<T>(T application)
+        {
+            if (!application.GetType().IsSubclassOf(typeof(DKService)))
+                throw new Exception("Invalid appliaction service class informed");
+
+            DarkKnightAppliaction.setApplication(application);
+        }
 
     }
 }

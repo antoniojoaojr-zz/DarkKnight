@@ -38,7 +38,7 @@ namespace DarkKnight.Data
         protected byte[] _packet;
 
         /// <summary>
-        /// Get the name of this packet
+        /// Get the format of this packet
         /// </summary>
         public PacketFormat format
         {

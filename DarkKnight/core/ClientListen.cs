@@ -80,9 +80,9 @@ namespace DarkKnight.core
             {
                 byte[] decoded;
                 if (listen.socketLayer == SocketLayer.websocket)
-                    decoded = listen.decode(PacketWeb.decode(received));
+                    decoded = listen._decode(PacketWeb.decode(received));
                 else
-                    decoded = listen.decode(received);
+                    decoded = listen._decode(received);
 
                 listen.toApplication(listen, new PacketHandler(decoded));
 
@@ -127,7 +127,7 @@ namespace DarkKnight.core
                 {
                     case RegisterType.crypt:
                         // if is crypt, register the crypt in the client
-                        listen.registerCrypt(register.getAbstract<Object>());
+                        listen._registerCrypt(register.getAbstract<Object>());
                         break;
                 }
 

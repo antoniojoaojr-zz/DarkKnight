@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -57,6 +58,20 @@ namespace DarkKnight.Data
                     throw new Exception("the format is not setted");
 
                 return format.ToCharArray();
+            }
+        }
+
+        /// <summary>
+        /// Gets the packet format in a array of byte
+        /// </summary>
+        public byte[] getByteArrayFormat
+        {
+            get
+            {
+                if (format == null)
+                    throw new Exception("the format is not setted");
+
+                return Encoding.UTF8.GetBytes(format);
             }
         }
     }
