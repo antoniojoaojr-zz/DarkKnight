@@ -39,7 +39,7 @@ namespace DarkKnight
         /// Is called when received a new packet not registered from a client
         /// </summary>
         /// <param name="client"></param>
-        abstract public void ReceivedPacket(Client client, Data.Packet buffer);
+        abstract public void ReceivedPacket(Client client, Packet packet);
 
         /// <summary>
         /// Is called when a client closing the connection with the server
