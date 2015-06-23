@@ -92,7 +92,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
         {
-            transportLayer.Send(EncodingPacket(new PacketCreator(toSend)));
+            SendEncodingPacket(new PacketCreator(toSend));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace DarkKnight.Network
         /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
         public void SendFormated(PacketFormat format)
         {
-            transportLayer.Send(EncodingPacket(new PacketCreator(format, new byte[] { })));
+            SendEncodingPacket(new PacketCreator(format, new byte[] { }));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">the int to send</param>
         public void SendFormated(PacketFormat format, byte[] toSend)
         {
-            transportLayer.Send(EncodingPacket(new PacketCreator(format, toSend)));
+            SendEncodingPacket(new PacketCreator(format, toSend));
         }
 
         /// <summary>
@@ -143,18 +143,21 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
-        /// encode a packet to transport
+        /// encode a packet to transport and send
         /// </summary>
         /// <param name="packet">The PacketCreator object</param>
         /// <returns>array of bytes encoded</returns>
-        private byte[] EncodingPacket(PacketCreator packet)
+        private void SendEncodingPacket(PacketCreator packet)
         {
+            byte[] data;
             // if this client is a websocket, encode package with a packetweb
             if (socketLayer == SocketLayer.websocket)
-                return PacketWeb.encode(_encode(packet.data));
+                data = PacketWeb.encode(_encode(packet.data));
+            else // otherwise return packet encode
+                data = _encode(packet.data);
 
-            // otherwise return packet encode
-            return _encode(packet.data);
+            // send the data
+            transportLayer.Send(data);
         }
 
     }
