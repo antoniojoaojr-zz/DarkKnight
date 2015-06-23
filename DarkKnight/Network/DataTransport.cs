@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Threading;
 
 #region License Information
 /* ************************************************************
@@ -49,7 +48,7 @@ namespace DarkKnight.Network
         /// <summary>
         /// The actual situation of thread responsible for transport data
         /// </summary>
-        private bool threadStatus = false;
+        private bool asynSending = false;
 
         public DataTransport(Client clientObj, Socket socketObj)
         {
@@ -62,55 +61,65 @@ namespace DarkKnight.Network
         /// the actual data param enter in the queue
         /// </summary>
         /// <param name="packet">array of bytes to send</param>
-        public void Send(PacketCreator packet)
+        public void Send(byte[] packet)
         {
             // add the data in the queue
-            queueData.Enqueue(packet.data);
+            queueData.Enqueue(packet);
 
             // if no thread working to send data
-            if (!threadStatus)
+            if (!asynSending)
+                BeginSend(queueData.Dequeue());
+        }
+
+        private void BeginSend(byte[] data)
+        {
+            // try send data to socket client
+            try
             {
                 // we set to true to say that we are working with sending
-                threadStatus = true;
+                asynSending = true;
 
-                // here we started working
-                (new Thread(new ThreadStart(SendThread))).Start();
+                // start sending data to the socket
+                socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendAsyncResult), socket);
+            }
+            catch (ArgumentNullException ex)
+            {
+                // try to send a null buffer to the client generate a exception
+                // notify is in a output log
+                Console.WriteLine("Null data to send a cliente is not accepted:\n" + ex.Message + " - " + ex.Source);
+            }
+            catch
+            {
+                // otherwise, any exception not NullException, is a invalid socket connection
+                // notify is to application with clossing connection
+                client.Close();
             }
         }
 
         /// <summary>
-        /// Method sending in a thread
+        /// The sending result
         /// </summary>
-        private void SendThread()
+        /// <param name="ar"></param>
+        private void SendAsyncResult(IAsyncResult ar)
         {
-            // run this sending thread until there is nothing left in the queue
-            while (queueData.Count > 0)
+            // retrieve the send socekt object
+            Socket result = (Socket)ar.AsyncState;
+
+            // setting end send
+            result.EndSend(ar);
+
+            // if have more data in queue
+            if (queueData.Count > 0)
             {
-                // get next data in the queue
-                byte[] data = queueData.Dequeue();
-
-                // try send data to socket client
-                try
-                {
-                    // sends data to the client
-                    socket.Send(data);
-                }
-                catch (ArgumentNullException ex)
-                {
-                    // try to send a null buffer to the client generate a exception
-                    // notify is in a output log
-                    Console.WriteLine("Null data to send a cliente is not accepted:\n" + ex.Message + " - " + ex.Source);
-                }
-                catch
-                {
-                    // otherwise, any exception not NullException, is a invalid socket connection
-                    // notify is to application with clossing connection
-                    client.Close();
-                }
+                // call sending
+                BeginSend(queueData.Dequeue());
             }
-
-            // if no more data, flush this thread making false to not work
-            threadStatus = false;
+            else
+            {
+                // if not have more data in queue
+                // flush asynseding
+                asynSending = false;
+            }
         }
     }
 }

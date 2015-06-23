@@ -92,7 +92,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
         {
-            transportLayer.Send(new PacketCreator(toSend));
+            transportLayer.Send(EncodingPacket(new PacketCreator(toSend)));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace DarkKnight.Network
         /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
         public void SendFormated(PacketFormat format)
         {
-            transportLayer.Send(new PacketCreator(format, new byte[] { }));
+            transportLayer.Send(EncodingPacket(new PacketCreator(format, new byte[] { })));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace DarkKnight.Network
         /// <param name="toSend">the int to send</param>
         public void SendFormated(PacketFormat format, byte[] toSend)
         {
-            transportLayer.Send(new PacketCreator(format, toSend));
+            transportLayer.Send(EncodingPacket(new PacketCreator(format, toSend)));
         }
 
         /// <summary>
@@ -140,6 +140,21 @@ namespace DarkKnight.Network
         public void Close()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// encode a packet to transport
+        /// </summary>
+        /// <param name="packet">The PacketCreator object</param>
+        /// <returns>array of bytes encoded</returns>
+        private byte[] EncodingPacket(PacketCreator packet)
+        {
+            // if this client is a websocket, encode package with a packetweb
+            if (socketLayer == SocketLayer.websocket)
+                return PacketWeb.encode(_encode(packet.data));
+
+            // otherwise return packet encode
+            return _encode(packet.data);
         }
 
     }
