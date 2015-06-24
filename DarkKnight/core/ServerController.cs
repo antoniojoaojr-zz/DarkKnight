@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 
 #region License Information
 /* ************************************************************
@@ -23,34 +24,46 @@
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Data
+namespace DarkKnight.core
 {
-    public class Packet
+    class ServerController
     {
-        /// <summary>
-        /// The format of this packet
-        /// </summary>
-        protected PacketFormat _format = new PacketFormat("???");
+        private static Socket socket;
+        private static bool Running = false;
 
         /// <summary>
-        /// The data to process of this packet
+        /// Close the socket server
         /// </summary>
-        protected byte[] _packet;
-
-        /// <summary>
-        /// Get the format of this packet
-        /// </summary>
-        public PacketFormat format
+        public static void CloseSever()
         {
-            get { return _format; }
+            Running = false;
+            socket.Close();
         }
 
+
         /// <summary>
-        /// Get the byte array of data to process of this packet
+        /// Sets a socket running
         /// </summary>
-        public byte[] data
+        /// <param name="_socket"></param>
+        public static void setWork(Socket _socket)
         {
-            get { return _packet; }
+            socket = _socket;
+            Running = true;
+
+            // hack to keep the process running
+            RunningTimer();
         }
+
+        private static void RunningTimer()
+        {
+            // when Running is true,
+            // this loop keep the process running
+            while (Running)
+            {
+                // Pass through the loop every second
+                System.Threading.Thread.Sleep(1000);
+            }
+        }
+
     }
 }

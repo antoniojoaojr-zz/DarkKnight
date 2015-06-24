@@ -28,7 +28,7 @@ using System.Net.Sockets;
 
 namespace DarkKnight.core
 {
-    class Server
+    class ServerListen
     {
         private int nextClientId = 1000;
 
@@ -54,6 +54,9 @@ namespace DarkKnight.core
             server.Listen(50);
             // begin to list new connections asynchronous
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
+
+            // sets the socket is running
+            ServerController.setWork(server);
         }
 
         /// <summary>

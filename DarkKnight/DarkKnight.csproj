@@ -45,13 +45,13 @@
     <Compile Include="core\PacketHandler.cs" />
     <Compile Include="core\Clients\Register.cs" />
     <Compile Include="core\Clients\RegisterAbstract.cs" />
-    <Compile Include="core\Server.cs" />
+    <Compile Include="core\ServerListen.cs" />
     <Compile Include="core\PacketWeb.cs" />
     <Compile Include="core\Application.cs" />
+    <Compile Include="core\ServerController.cs" />
     <Compile Include="Crypt\CryptProvider.cs" />
     <Compile Include="DarkKnightAppliaction.cs" />
     <Compile Include="Data\PacketCreator.cs" />
-    <Compile Include="Data\PacketFormatController.cs" />
     <Compile Include="DKAbstractReceiver.cs" />
     <Compile Include="IReceived.cs" />
     <Compile Include="Network\Client.cs" />

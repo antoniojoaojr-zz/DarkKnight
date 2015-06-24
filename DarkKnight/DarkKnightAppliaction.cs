@@ -36,7 +36,7 @@ namespace DarkKnight
 
             _callback = setCallback;
 
-            new core.Server().open(2104);
+            new core.ServerListen().open(2104);
         }
 
         public static Object callback

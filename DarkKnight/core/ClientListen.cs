@@ -147,7 +147,7 @@ namespace DarkKnight.core
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                Console.WriteLine("Client [" + this.IPAddress.ToString() + "] sended a invalid package");
+                Console.WriteLine("Client [" + this.IPAddress.ToString() + "] sended a invalid package format [???] with no data");
                 return;
             }
 

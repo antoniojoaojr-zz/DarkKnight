@@ -1,6 +1,7 @@
 ﻿using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -34,106 +35,75 @@ namespace DarkKnight.core
         /// </summary>
         private byte[] originalPacket;
 
-        /// <summary>
-        /// The position of length information end
-        /// </summary>
-        private int lengthPosition = 3;
-
-        /// <summary>
-        /// The length of the data to process the packet
-        /// </summary>
-        private int length = 0;
 
         public PacketHandler(byte[] packet)
         {
             // we get original packet
             originalPacket = packet;
 
-            // if handler the packet
-            if (handler())
+            // try handler packet
+            if (!handlerPacket())
             {
-                // filter the packet for a readable packege
-                filter();
+                // if handler is fail, set a default invalid packet
+                _format = new PacketFormat("???");
+                _packet = new byte[] { };
             }
         }
 
         /// <summary>
-        /// We check whether the packet is a valid packet seeing its reporting rules
-        /// First we find the minimum size
-        /// Then also we check to see if it is greater than the minimum size, and if this is true
-        /// We verify that it correctly informs the data size that the package stores to be processed.
-        /// If all this corretado then qualify the package as valid to go to apply and be treated as the application requires.
+        /// Here we filter the received packet in bytes to turn into a readable package for the Packet class.
+        /// We took the package format and also took the given package.
         /// </summary>
-        /// <returns>True if packet is valid otherwise false</returns>
-        private bool handler()
+        /// <returns>true if packet is handled with success</returns>
+        private bool handlerPacket()
         {
-            // the min length of the packet is 3
-            // the first 3 position in the packet define the packet name or format
-            if (originalPacket.Length < 3)
+            int lengthFormat = 0;
+            int lengthFormatPosition = 0;
+
+            do
+            {
+                lengthFormat += originalPacket[lengthFormatPosition];
+                lengthFormatPosition++;
+                if (lengthFormatPosition >= originalPacket.Length || lengthFormat > originalPacket.Length)
+                    return false;
+            } while (originalPacket[lengthFormatPosition] > 0);
+
+            int lengthData = 0;
+            int lengthDataPosition = lengthFormat + lengthFormatPosition + 1;
+
+            if (lengthDataPosition >= originalPacket.Length)
                 return false;
 
-            // if the packet have length is more than 3
-            // the packet have data to process and not just command
-            if (originalPacket.Length > 3)
+            do
             {
-                // start the read length of the data to process
-                // when the packet in the lengthPosition is bigger than 0, have more length to process in next point
-                // the length information finish when the packet in lengthPosition is equal 0
-                do
-                {
-                    length += originalPacket[lengthPosition];
-                    lengthPosition++;
-
-                    // if the lengthPosition is equal or bigger of packet length
-                    // is a invalid packet, we discard the packet returning false
-                    if (lengthPosition >= originalPacket.Length)
-                        return false;
-
-                } while (originalPacket[lengthPosition] > 0);
-
-                // we check if the package have the same length readable
-                // if not, the packet is invalid and discard
-                if (originalPacket.Length != length + lengthPosition++)
+                lengthData += originalPacket[lengthDataPosition];
+                lengthDataPosition++;
+                if (lengthDataPosition >= originalPacket.Length || lengthData > originalPacket.Length)
                     return false;
-            }
+            } while (originalPacket[lengthDataPosition] > 0);
 
 
-            // if the sums of the format positions is nonzero, we have a new format for packet
-            if (originalPacket[0] + originalPacket[1] + originalPacket[2] != 0)
+            int lengthDataLengthInformation = lengthFormatPosition - (lengthFormat + lengthFormatPosition + 1);
+
+            if (originalPacket.Length != lengthData + lengthFormat + lengthFormatPosition + lengthDataLengthInformation + 2)
+                return false;
+
+            try
             {
-                try
-                {
-                    // here we try to give the new format to the package
-                    PacketFormat format = new PacketFormatController((char)originalPacket[0], (char)originalPacket[1], (char)originalPacket[2]);
+                byte[] format = new byte[lengthFormat];
+                _packet = new byte[lengthData];
 
-                    // we got here without exception the format is valid
-                    _format = format;
-                }
-                catch
-                {
-                    // if we can not give the new format to the package, then we define the package is invalid
-                    return false;
-                }
+                Array.Copy(originalPacket, lengthFormatPosition + 1, format, 0, lengthFormat);
+                Array.Copy(originalPacket, lengthDataPosition + 1, _packet, 0, lengthData);
+
+                _format = new PacketFormat(Encoding.UTF8.GetString(format));
+
+                return true;
             }
-
-            // the packet received have the specifications to go to the process data
-            return true;
-        }
-
-        /// <summary>
-        /// According to the handler() information, we feed the Packet class with the data
-        /// </summary>
-        private void filter()
-        {
-            // if length is zero, we have nothing to process here
-            if (length == 0)
-                return;
-
-            // we create a array of bytes in the size of the length to read
-            _packet = new byte[length];
-
-            // converting the original packet to the data of a packet to process
-            Array.Copy(originalPacket, lengthPosition, _packet, 0, _packet.Length);
+            catch
+            {
+                return false;
+            }
         }
     }
 }

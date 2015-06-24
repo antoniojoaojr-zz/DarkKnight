@@ -87,6 +87,15 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
+        /// Send a byte
+        /// </summary>
+        /// <param name="toSend">byte to send</param>
+        public void Send(byte toSend)
+        {
+            Send(new byte[] { toSend });
+        }
+
+        /// <summary>
         /// Send a array of bytes 8-bits to the client
         /// </summary>
         /// <param name="toSend">The array of bytes to send</param>
@@ -107,7 +116,7 @@ namespace DarkKnight.Network
         /// <summary>
         /// Send a mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         public void SendFormated(PacketFormat format)
         {
             SendEncodingPacket(new PacketCreator(format, new byte[] { }));
@@ -116,7 +125,7 @@ namespace DarkKnight.Network
         /// <summary>
         /// Send a array of bytes 8-bits mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the int to send</param>
         public void SendFormated(PacketFormat format, byte[] toSend)
         {
@@ -126,7 +135,7 @@ namespace DarkKnight.Network
         /// <summary>
         ///  Send a UTF8 String mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the string to send</param>
         public void SendFormatedString(PacketFormat format, string toSend)
         {

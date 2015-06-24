@@ -48,24 +48,35 @@ namespace DarkKnight.Data
         /// <param name="data">array of bytes data</param>
         public PacketCreator(byte[] data)
         {
-            // format data positions
-            _data = getData(data);
+            Creator(new PacketFormat("???"), data);
         }
 
         /// <summary>
         /// Create data formated with a format
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="data">array of bytes data</param>
         public PacketCreator(PacketFormat format, byte[] data)
         {
-            // format data positions
-            _data = getData(data);
+            Creator(format, data);
+        }
 
-            // get format in byte array
-            byte[] formatData = format.getByteArrayFormat;
+        private void Creator(PacketFormat format, byte[] data)
+        {
+            // create format
+            byte[] packetFormat = formatingPacket(format.getByteArrayFormat);
 
-            Array.Copy(formatData, _data, formatData.Length);
+            // create data
+            byte[] packetData = formatingPacket(data);
+
+            // setting length of packet
+            _data = new byte[packetFormat.Length + packetData.Length];
+
+            // copy format to packet
+            Array.Copy(packetFormat, _data, packetFormat.Length);
+
+            // copy data to packet
+            Array.Copy(packetData, 0, _data, packetFormat.Length, packetData.Length);
         }
 
         /// <summary>
@@ -73,17 +84,37 @@ namespace DarkKnight.Data
         /// </summary>
         /// <param name="data">the byte of array for format</param>
         /// <returns>the data formated</returns>
-        private byte[] getData(byte[] data)
+        private byte[] formatingPacket(byte[] data)
         {
-            // if data length is zero, just return 3 position to store formating type
-            if (data.Length == 0)
-                return new byte[3];
+            // we get a dynamic array stored a length information in packet
+            List<byte> lengthData = lengthList(data.Length);
 
-            // first we get the length of data to sending
-            int length = data.Length;
-            // we create a dynamic array to store a length information in packet
+            // we create a dataFormated with length:
+            // length of length data + length of length data information + 1 (for position final length information) 
+            byte[] packetData = new byte[data.Length + lengthData.Count + 1];
+
+            // convert the dynamic list to the dataFormated
+            for (int i = 0; i < lengthData.Count; i++)
+                packetData[i] = lengthData[i];
+
+            // add the final length information
+            packetData[lengthData.Count] = 0;
+
+            // if length is one, return
+            if (packetData.Length < 2)
+                return packetData;
+
+            // copy the data to data formated
+            Array.Copy(data, 0, packetData, lengthData.Count + 1, data.Length);
+
+            // return the data formated
+            return packetData;
+        }
+
+        private List<byte> lengthList(int _length)
+        {
+            int length = _length;
             List<byte> lengthData = new List<byte>();
-
             // we storing the length of data when, length is more than zero
             while (length > 0)
             {
@@ -97,25 +128,7 @@ namespace DarkKnight.Data
                 length -= lengthStore;
             }
 
-            // we create a dataFormated with length:
-            // 3 (length of format packet informatio) + length of length data + length of length data information + 1 (for position final length information) 
-            byte[] dataFormat = new byte[3 + data.Length + lengthData.Count + 1];
-
-            // convert the dynamic list to the dataFormated
-            for (int i = 0; i < lengthData.Count; i++)
-                dataFormat[i + 3] = lengthData[i];
-
-            // add the final length information
-            dataFormat[3 + lengthData.Count] = 0;
-
-            // getting position to start data package
-            int startIndex = 3 + lengthData.Count + 1;
-
-            // copy the data to data formated
-            Array.Copy(data, 0, dataFormat, startIndex, data.Length);
-
-            // return the data formated
-            return dataFormat;
+            return lengthData;
         }
     }
 }
