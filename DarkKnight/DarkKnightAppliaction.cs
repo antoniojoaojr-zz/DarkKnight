@@ -29,14 +29,14 @@ namespace DarkKnight
     {
         private static Object _callback = null;
 
-        public static void setApplication<T>(T setCallback)
+        public static void setApplication<T>(T setCallback, Configure config)
         {
             if (_callback != null)
                 throw new Exception("Only one extension of DKService is allowed");
 
             _callback = setCallback;
 
-            new core.ServerListen().open(2104);
+            new core.ServerListen().open(config);
         }
 
         public static Object callback

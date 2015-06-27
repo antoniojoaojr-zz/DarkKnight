@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 
 #region License Information
 /* ************************************************************
@@ -24,48 +23,52 @@ using System.Net.Sockets;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.core
+namespace DarkKnight
 {
-    class ServerController
+    public class Configure
     {
-        private static Socket socket;
-        private static bool Running = false;
+
+        private int _ServerPort = 2111;
+        private int _backlog = 50;
+        private int _inactiveTime = 15;
 
         /// <summary>
-        /// Close the socket server
+        /// Sets port with server work
+        /// By default is 2111
         /// </summary>
-        public static void CloseSever()
+        public int Port
         {
-            Running = false;
-            socket.Close();
-        }
-
-        /// <summary>
-        /// Sets a socket running
-        /// </summary>
-        /// <param name="_socket"></param>
-        public static void setWork(Socket _socket, int inactiveTime)
-        {
-            socket = _socket;
-            Running = true;
-
-            DarkKnight.core.Clients.ClientWork.setInactiveTime(inactiveTime);
-
-            // hack to keep the process running
-            RunningTimer();
-        }
-
-        private static void RunningTimer()
-        {
-            // when Running is true,
-            // this loop keep the process running
-            while (Running)
+            get { return _ServerPort; }
+            set
             {
-                // remove clients inactive
-                DarkKnight.core.Clients.ClientWork.RemoveInactiveClients();
+                _ServerPort = value;
+            }
+        }
 
-                // Pass through the loop every second
-                System.Threading.Thread.Sleep(1000);
+        /// <summary>
+        /// setting maximum number of sockets in line to enter the server
+        /// By default is 50
+        /// </summary>
+        public int Backlog
+        {
+            get { return _backlog; }
+            set
+            {
+                _backlog = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets a time to check if a client is inactive, if is inactive more of this time we is desconected
+        /// Param in seconds
+        /// By defauls is 15;
+        /// </summary>
+        public int MaxInactiveTime
+        {
+            get { return _inactiveTime; }
+            set
+            {
+                _inactiveTime = value;
             }
         }
 

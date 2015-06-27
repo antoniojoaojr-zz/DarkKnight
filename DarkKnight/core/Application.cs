@@ -42,7 +42,7 @@ namespace DarkKnight.core
             }
             catch
             {
-                // the application error
+                Console.WriteLine("[ERROR] Application generate a error in connectionOpened");
             }
         }
 
@@ -68,7 +68,7 @@ namespace DarkKnight.core
             }
             catch
             {
-                // the appliaction error
+                Console.WriteLine("[ERROR] Application generate a error in ReceivedPacket");
             }
         }
 
@@ -80,7 +80,7 @@ namespace DarkKnight.core
             }
             catch
             {
-                // the application error
+                Console.WriteLine("[ERROR] Application generate a error in connectionClosed");
             }
         }
     }

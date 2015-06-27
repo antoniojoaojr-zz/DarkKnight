@@ -48,16 +48,27 @@ namespace DarkKnight
         abstract public void connectionClosed(Client client);
 
         /// <summary>
-        /// Set the application class
+        /// Set a application class
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="application"></param>
-        protected void setApplication<T>(T application)
+        /// <param name="application">The application</param>
+        /// <param name="config">DarkKnight.Configure object</param>
+        protected void setApplication<T>(T application, Configure config)
         {
             if (!application.GetType().IsSubclassOf(typeof(DKService)))
                 throw new Exception("Invalid appliaction service class informed");
 
-            DarkKnightAppliaction.setApplication(application);
+            DarkKnightAppliaction.setApplication(application, config);
+        }
+
+        /// <summary>
+        /// Set a application class
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="application">The application class</param>
+        protected void setApplication<T>(T application)
+        {
+            setApplication(application, new Configure());
         }
 
     }

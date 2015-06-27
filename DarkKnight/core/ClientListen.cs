@@ -36,7 +36,7 @@ namespace DarkKnight.core
         /// <summary>
         /// The buffer to receive data from the client
         /// </summary>
-        private byte[] buffer = new byte[65535];
+        private byte[] listenBuffer = new byte[65535];
 
         public ClientListen(Socket socket, int id)
         {
@@ -55,11 +55,22 @@ namespace DarkKnight.core
             // getting the current client object
             ClientListen listen = (ClientListen)ar.AsyncState;
 
-            // getting the size of the packet received
-            int size = listen.client.EndReceive(ar);
+            try
+            {
+                // we calling for handle received in endReceive
+                ReceivedHandler(listen, listen.client.EndReceive(ar));
+            }
+            catch
+            {
+                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "] disconnected anormal in core.ClientListen.Receivedpacket");
+                listen.client.Close();
+            }
+        }
 
+        private void ReceivedHandler(ClientListen listen, int size)
+        {
             // get the byte array with the size received
-            byte[] received = getReceivedPacket(buffer, size);
+            byte[] received = getReceivedPacket(listen.listenBuffer, size);
 
             // after restore the client object and also the received packet in original size, 
             // we release the client asynchronously to receive more packages
@@ -75,9 +86,14 @@ namespace DarkKnight.core
             if (size == 0)
                 return;
 
+            ClientWork.udpate(listen);
+
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)
             {
+                if (IsPing(listen, received))
+                    return;
+
                 byte[] decoded;
                 if (listen.socketLayer == SocketLayer.websocket)
                     decoded = listen._decode(PacketWeb.decode(received));
@@ -106,6 +122,17 @@ namespace DarkKnight.core
             // we are sure that we've set the type of layer of SocketLayer that our client is,
             // so we will notify the application which new is connected
             Application.connectionOpened(listen);
+        }
+
+        private bool IsPing(ClientListen listen, byte[] received)
+        {
+            if (received.Length != 4)
+                return false;
+
+            if (Encoding.UTF8.GetString(received) != "Ping")
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -147,7 +174,7 @@ namespace DarkKnight.core
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                Console.WriteLine("Client [" + this.IPAddress.ToString() + "] sended a invalid package format [???] with no data");
+                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "] sended a invalid package format [???] with no data");
                 return;
             }
 
@@ -176,14 +203,14 @@ namespace DarkKnight.core
             try
             {
                 // we try to continue receiving client packages
-                listen.client.BeginReceive(listen.buffer, 0, listen.buffer.Length, SocketFlags.None, new AsyncCallback(listen.ReceivablePacket), listen);
+                listen.client.BeginReceive(listen.listenBuffer, 0, listen.listenBuffer.Length, SocketFlags.None, new AsyncCallback(listen.ReceivablePacket), listen);
             }
             catch
             {
                 // if we have an exception to receive a new package, it means that we have lost the connection with the client
                 // notify this to the application
                 if (listen.socketLayer != SocketLayer.undefined)
-                    Application.connectionClosed(listen);
+                    listen.client.Close();
             }
         }
     }

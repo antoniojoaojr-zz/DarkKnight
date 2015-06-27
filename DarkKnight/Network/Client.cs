@@ -1,4 +1,5 @@
 ﻿using DarkKnight.core;
+using DarkKnight.core.Clients;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
@@ -40,6 +41,11 @@ namespace DarkKnight.Network
     public abstract class Client : CryptProvider
     {
         /// <summary>
+        /// Gets the client status
+        /// </summary>
+        private bool Connected = true;
+
+        /// <summary>
         /// The session id of this client
         /// </summary>
         protected int _ID;
@@ -48,6 +54,8 @@ namespace DarkKnight.Network
         /// The layer provider to server sends data for client
         /// </summary>
         private DataTransport transportLayer;
+
+        private string _IPAddress;
 
         /// <summary>
         /// The socket object of this client
@@ -60,8 +68,9 @@ namespace DarkKnight.Network
             }
             set
             {
-                transportLayer = new DataTransport(this, value);
                 client = value;
+                _IPAddress = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
+                transportLayer = new DataTransport(this, value);
             }
         }
 
@@ -75,7 +84,7 @@ namespace DarkKnight.Network
         /// </summary>
         public IPAddress IPAddress
         {
-            get { return IPAddress.Parse(((IPEndPoint)client.RemoteEndPoint).Address.ToString()); }
+            get { return IPAddress.Parse(_IPAddress); }
         }
 
         /// <summary>
@@ -148,7 +157,14 @@ namespace DarkKnight.Network
         /// </summary>
         public void Close()
         {
-            throw new NotImplementedException();
+            if (Connected)
+            {
+                ClientWork.RemoveClientId(this.Id);
+                client.Close();
+                Application.connectionClosed(this);
+
+                Connected = false;
+            }
         }
 
         /// <summary>
