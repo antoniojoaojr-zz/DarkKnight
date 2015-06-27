@@ -30,7 +30,6 @@ namespace DarkKnight
 
         private int _ServerPort = 2111;
         private int _backlog = 50;
-        private int _inactiveTime = 15;
 
         /// <summary>
         /// Sets port with server work
@@ -55,20 +54,6 @@ namespace DarkKnight
             set
             {
                 _backlog = value;
-            }
-        }
-
-        /// <summary>
-        /// Sets a time to check if a client is inactive, if is inactive more of this time we is desconected
-        /// Param in seconds
-        /// By defauls is 15;
-        /// </summary>
-        public int MaxInactiveTime
-        {
-            get { return _inactiveTime; }
-            set
-            {
-                _inactiveTime = value;
             }
         }
 

@@ -54,9 +54,8 @@ namespace DarkKnight.core
             server.Listen(config.Backlog);
             // begin to list new connections asynchronous
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
-
             // sets the socket is running
-            ServerController.setWork(server, config.MaxInactiveTime);
+            ServerController.setWork(server);
         }
 
         /// <summary>

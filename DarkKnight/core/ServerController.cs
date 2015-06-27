@@ -44,13 +44,11 @@ namespace DarkKnight.core
         /// Sets a socket running
         /// </summary>
         /// <param name="_socket"></param>
-        public static void setWork(Socket _socket, int inactiveTime)
+        public static void setWork(Socket _socket)
         {
             socket = _socket;
             Running = true;
-
-            DarkKnight.core.Clients.ClientWork.setInactiveTime(inactiveTime);
-
+            
             // hack to keep the process running
             RunningTimer();
         }

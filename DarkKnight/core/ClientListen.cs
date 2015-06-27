@@ -62,8 +62,7 @@ namespace DarkKnight.core
             }
             catch
             {
-                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "] disconnected anormal in core.ClientListen.Receivedpacket");
-                listen.client.Close();
+                listen.Close();
             }
         }
 
@@ -113,10 +112,14 @@ namespace DarkKnight.core
                 listen.socketLayer = SocketLayer.websocket;
                 // when working with websocket have to do the handshake on the connection, 
                 // here we have the using Authentication processed and sent to the websocket finalizing the handshake
-                listen.Send(webSocket);
+                listen.client.Send(webSocket);
             }
-            else // otherwise the socket is normal 'socket' layer
+            else
+            {
+                // otherwise the socket is normal 'socket' layer
                 listen.socketLayer = SocketLayer.socket;
+                listen.client.Send(new byte[] { 32, 32 });
+            }
 
             // if we come here is because it was the first received packet,
             // we are sure that we've set the type of layer of SocketLayer that our client is,
@@ -174,7 +177,7 @@ namespace DarkKnight.core
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "] sended a invalid package format [???] with no data");
+                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "-"+listen.Id+"] sended a invalid package format [???] with no data");
                 return;
             }
 
@@ -210,7 +213,7 @@ namespace DarkKnight.core
                 // if we have an exception to receive a new package, it means that we have lost the connection with the client
                 // notify this to the application
                 if (listen.socketLayer != SocketLayer.undefined)
-                    listen.client.Close();
+                    listen.Close();
             }
         }
     }

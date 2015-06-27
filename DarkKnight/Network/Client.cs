@@ -57,6 +57,8 @@ namespace DarkKnight.Network
 
         private string _IPAddress;
 
+        private Socket _client;
+
         /// <summary>
         /// The socket object of this client
         /// </summary>
@@ -64,13 +66,13 @@ namespace DarkKnight.Network
         {
             get
             {
-                return client;
+                return _client;
             }
             set
             {
-                client = value;
-                _IPAddress = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
-                transportLayer = new DataTransport(this, value);
+                _client = value;
+                _IPAddress = ((IPEndPoint)_client.RemoteEndPoint).Address.ToString();
+                transportLayer = new DataTransport(this, _client);
             }
         }
 
@@ -159,11 +161,11 @@ namespace DarkKnight.Network
         {
             if (Connected)
             {
+                Connected = false;
+
                 ClientWork.RemoveClientId(this.Id);
                 client.Close();
                 Application.connectionClosed(this);
-
-                Connected = false;
             }
         }
 

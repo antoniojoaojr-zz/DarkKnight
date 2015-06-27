@@ -66,6 +66,7 @@ namespace DarkKnight.core
                 lengthFormatPosition++;
                 if (lengthFormatPosition >= originalPacket.Length || lengthFormat > originalPacket.Length)
                     return false;
+
             } while (originalPacket[lengthFormatPosition] > 0);
 
             int lengthData = 0;
@@ -80,10 +81,11 @@ namespace DarkKnight.core
                 lengthDataPosition++;
                 if (lengthDataPosition >= originalPacket.Length || lengthData > originalPacket.Length)
                     return false;
+
             } while (originalPacket[lengthDataPosition] > 0);
 
 
-            int lengthDataLengthInformation = lengthFormatPosition - (lengthFormat + lengthFormatPosition + 1);
+            int lengthDataLengthInformation = lengthDataPosition - (lengthFormat + lengthFormatPosition + 1);
 
             if (originalPacket.Length != lengthData + lengthFormat + lengthFormatPosition + lengthDataLengthInformation + 2)
                 return false;
