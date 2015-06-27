@@ -23,34 +23,54 @@
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Data
+namespace DarkKnight
 {
-    public class Packet
+    public class Configure
     {
-        /// <summary>
-        /// The format of this packet
-        /// </summary>
-        protected PacketFormat _format = new PacketFormat("???");
+
+        private int _ServerPort = 2111;
+        private int _backlog = 50;
+        private int _inactiveTime = 15;
 
         /// <summary>
-        /// The data to process of this packet
+        /// Sets port with server work
+        /// By default is 2111
         /// </summary>
-        protected byte[] _packet;
-
-        /// <summary>
-        /// Get the format of this packet
-        /// </summary>
-        public PacketFormat format
+        public int Port
         {
-            get { return _format; }
+            get { return _ServerPort; }
+            set
+            {
+                _ServerPort = value;
+            }
         }
 
         /// <summary>
-        /// Get the byte array of data to process of this packet
+        /// setting maximum number of sockets in line to enter the server
+        /// By default is 50
         /// </summary>
-        public byte[] data
+        public int Backlog
         {
-            get { return _packet; }
+            get { return _backlog; }
+            set
+            {
+                _backlog = value;
+            }
         }
+
+        /// <summary>
+        /// Sets a time to check if a client is inactive, if is inactive more of this time we is desconected
+        /// Param in seconds
+        /// By defauls is 15;
+        /// </summary>
+        public int MaxInactiveTime
+        {
+            get { return _inactiveTime; }
+            set
+            {
+                _inactiveTime = value;
+            }
+        }
+
     }
 }

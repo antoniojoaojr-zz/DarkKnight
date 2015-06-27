@@ -1,4 +1,5 @@
 ﻿using DarkKnight.core;
+using DarkKnight.core.Clients;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
@@ -40,6 +41,11 @@ namespace DarkKnight.Network
     public abstract class Client : CryptProvider
     {
         /// <summary>
+        /// Gets the client status
+        /// </summary>
+        private bool Connected = true;
+
+        /// <summary>
         /// The session id of this client
         /// </summary>
         protected int _ID;
@@ -48,6 +54,8 @@ namespace DarkKnight.Network
         /// The layer provider to server sends data for client
         /// </summary>
         private DataTransport transportLayer;
+
+        private string _IPAddress;
 
         /// <summary>
         /// The socket object of this client
@@ -60,8 +68,9 @@ namespace DarkKnight.Network
             }
             set
             {
-                transportLayer = new DataTransport(this, value);
                 client = value;
+                _IPAddress = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
+                transportLayer = new DataTransport(this, value);
             }
         }
 
@@ -75,7 +84,7 @@ namespace DarkKnight.Network
         /// </summary>
         public IPAddress IPAddress
         {
-            get { return IPAddress.Parse(((IPEndPoint)client.RemoteEndPoint).Address.ToString()); }
+            get { return IPAddress.Parse(_IPAddress); }
         }
 
         /// <summary>
@@ -87,12 +96,21 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
+        /// Send a byte
+        /// </summary>
+        /// <param name="toSend">byte to send</param>
+        public void Send(byte toSend)
+        {
+            Send(new byte[] { toSend });
+        }
+
+        /// <summary>
         /// Send a array of bytes 8-bits to the client
         /// </summary>
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
         {
-            transportLayer.Send(new PacketCreator(toSend));
+            SendEncodingPacket(new PacketCreator(toSend));
         }
 
         /// <summary>
@@ -107,26 +125,26 @@ namespace DarkKnight.Network
         /// <summary>
         /// Send a mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         public void SendFormated(PacketFormat format)
         {
-            transportLayer.Send(new PacketCreator(format, new byte[] { }));
+            SendEncodingPacket(new PacketCreator(format, new byte[] { }));
         }
 
         /// <summary>
         /// Send a array of bytes 8-bits mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the int to send</param>
         public void SendFormated(PacketFormat format, byte[] toSend)
         {
-            transportLayer.Send(new PacketCreator(format, toSend));
+            SendEncodingPacket(new PacketCreator(format, toSend));
         }
 
         /// <summary>
         ///  Send a UTF8 String mapped with format to the client
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormatController object</param>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the string to send</param>
         public void SendFormatedString(PacketFormat format, string toSend)
         {
@@ -139,7 +157,32 @@ namespace DarkKnight.Network
         /// </summary>
         public void Close()
         {
-            throw new NotImplementedException();
+            if (Connected)
+            {
+                ClientWork.RemoveClientId(this.Id);
+                client.Close();
+                Application.connectionClosed(this);
+
+                Connected = false;
+            }
+        }
+
+        /// <summary>
+        /// encode a packet to transport and send
+        /// </summary>
+        /// <param name="packet">The PacketCreator object</param>
+        /// <returns>array of bytes encoded</returns>
+        private void SendEncodingPacket(PacketCreator packet)
+        {
+            byte[] data;
+            // if this client is a websocket, encode package with a packetweb
+            if (socketLayer == SocketLayer.websocket)
+                data = PacketWeb.encode(_encode(packet.data));
+            else // otherwise return packet encode
+                data = _encode(packet.data);
+
+            // send the data
+            transportLayer.Send(data);
         }
 
     }

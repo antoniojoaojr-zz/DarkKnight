@@ -57,6 +57,7 @@ namespace DarkKnight.Crypt
             }
             catch
             {
+                Console.WriteLine("[ERROR] class " + _crypt.GetType().Name + " responsable to decrypt generate a error and the package received is not descripted");
                 // if the packet not be complet the decode, return the original packet from param
                 return packet;
             }
@@ -82,6 +83,7 @@ namespace DarkKnight.Crypt
             }
             catch
             {
+                Console.WriteLine("[ERROR] class " + _crypt.GetType().Name + " responsable to encrypt generate a error and the package to send is not cryptographed");
                 // if the packet not be complet the encoded, return the original packet from param
                 return packet;
             }

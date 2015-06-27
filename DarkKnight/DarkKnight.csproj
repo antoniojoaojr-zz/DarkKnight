@@ -41,17 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configure.cs" />
     <Compile Include="core\ClientListen.cs" />
+    <Compile Include="core\Clients\ClientWork.cs" />
     <Compile Include="core\PacketHandler.cs" />
     <Compile Include="core\Clients\Register.cs" />
     <Compile Include="core\Clients\RegisterAbstract.cs" />
-    <Compile Include="core\Server.cs" />
+    <Compile Include="core\ServerListen.cs" />
     <Compile Include="core\PacketWeb.cs" />
     <Compile Include="core\Application.cs" />
+    <Compile Include="core\ServerController.cs" />
     <Compile Include="Crypt\CryptProvider.cs" />
     <Compile Include="DarkKnightAppliaction.cs" />
     <Compile Include="Data\PacketCreator.cs" />
-    <Compile Include="Data\PacketFormatController.cs" />
     <Compile Include="DKAbstractReceiver.cs" />
     <Compile Include="IReceived.cs" />
     <Compile Include="Network\Client.cs" />
@@ -63,11 +65,6 @@
     <Compile Include="Utils\PacketDictionary.cs" />
     <Compile Include="Data\PacketFormat.cs" />
     <Compile Include="Utils\PacketMap.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Configs\network.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

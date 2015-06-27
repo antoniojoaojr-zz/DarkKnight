@@ -29,9 +29,21 @@ namespace DarkKnight.Data
     /// <summary>
     /// Class represents the format of a packet
     /// </summary>
-    public abstract class PacketFormat
+    public class PacketFormat
     {
-        protected string format = null;
+        private string format = null;
+
+        /// <summary>
+        /// Sets the format of a packet passing as parameter string
+        /// </summary>
+        /// <param name="name">The name of format</param>
+        public PacketFormat(string name)
+        {
+            if (name.Length < 3)
+                throw new Exception("The min length of name is 3");
+
+            format = name;
+        }
 
         /// <summary>
         /// Gets the packet format in a string

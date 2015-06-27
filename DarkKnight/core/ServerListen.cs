@@ -28,7 +28,7 @@ using System.Net.Sockets;
 
 namespace DarkKnight.core
 {
-    class Server
+    class ServerListen
     {
         private int nextClientId = 1000;
 
@@ -37,23 +37,26 @@ namespace DarkKnight.core
         /// </summary>
         /// <param name="port">Port number server listen</param>
         /// <exception cref="System.Net.NetworkInformation">Exception is thrown only if passed by parameter port is occupied</exception>
-        public void open(int port)
+        public void open(Configure config)
         {
             foreach (TcpConnectionInformation info in (IPGlobalProperties.GetIPGlobalProperties()).GetActiveTcpConnections())
             {
                 // check the port is not occupied
-                if (info.LocalEndPoint.Port == port)
+                if (info.LocalEndPoint.Port == config.Port)
                     throw new NetworkInformationException();
             }
 
             // create the socket object to accept tcp stream
             Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // put the socket to accept connections from any IP on the specified port
-            server.Bind(new IPEndPoint(IPAddress.Any, port));
+            server.Bind(new IPEndPoint(IPAddress.Any, config.Port));
             // we setting maximum number of sockets in line to enter the server
-            server.Listen(50);
+            server.Listen(config.Backlog);
             // begin to list new connections asynchronous
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
+
+            // sets the socket is running
+            ServerController.setWork(server, config.MaxInactiveTime);
         }
 
         /// <summary>
@@ -69,8 +72,15 @@ namespace DarkKnight.core
             // so we can optimize the queue requests for connection
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
 
-            // we add the new connected client to the listener channel
-            new ClientListen((Socket)server.EndAccept(Result), nextClientId++);
+            try
+            {
+                // we add the new connected client to the listener channel
+                new ClientListen((Socket)server.EndAccept(Result), ++nextClientId);
+            }
+            catch
+            {
+                Console.WriteLine("[WARNING] A new client connected generate a error and not accepted");
+            }
         }
     }
 }
