@@ -45,7 +45,7 @@ namespace DarkKnight.core
         {
             string receivable = Encoding.UTF8.GetString(_packet, 0, _packet.Length);
 
-            if (receivable.Any(text => "Sec-WebSocket-Key:".Contains(text)))
+            if (receivable.Contains("Sec-WebSocket-Key:"))
             {
                 string key = receivable.Replace("Sec-WebSocket-Key:", "`").Split('`')[1].Replace("\r", "").Split('\n')[0].Trim();
                 string acceptKey = AcceptKey(ref key);

@@ -105,21 +105,29 @@ namespace DarkKnight.Network
             // retrieve the send socekt object
             Socket result = (Socket)ar.AsyncState;
 
-            // setting end send
-            result.EndSend(ar);
+            try
+            {
+                // setting end send
+                result.EndSend(ar);
 
-            // if have more data in queue
-            if (queueData.Count > 0)
-            {
-                // call sending
-                BeginSend(queueData.Dequeue());
+                // if have more data in queue
+                if (queueData.Count > 0)
+                {
+                    // call sending
+                    BeginSend(queueData.Dequeue());
+                }
+                else
+                {
+                    // if not have more data in queue
+                    // flush asynseding
+                    asynSending = false;
+                }
             }
-            else
+            catch
             {
-                // if not have more data in queue
-                // flush asynseding
-                asynSending = false;
+                client.Close();
             }
+
         }
     }
 }

@@ -31,7 +31,6 @@ namespace DarkKnight.core.Clients
     class ClientWork
     {
         private static Dictionary<int, ClientWork> clientsWork = new Dictionary<int, ClientWork>();
-        private static int maxInactiveTime = 150;
 
         public Client _client;
         public DateTime time;
@@ -41,17 +40,15 @@ namespace DarkKnight.core.Clients
             _client = client;
         }
 
-        public static void setInactiveTime(int time)
-        {
-            maxInactiveTime = time;
-        }
-
         public static void udpate(Client client)
         {
-            if (!clientsWork.ContainsKey(client.Id))
-                clientsWork.Add(client.Id, new ClientWork(client));
+            lock (client)
+            {
+                if (!clientsWork.ContainsKey(client.Id))
+                    clientsWork[client.Id] = new ClientWork(client);
 
-            clientsWork[client.Id].time = DateTime.Now.AddSeconds(maxInactiveTime);
+                clientsWork[client.Id].time = DateTime.Now.AddMilliseconds(2400);
+            }
         }
 
         public static void RemoveInactiveClients()
