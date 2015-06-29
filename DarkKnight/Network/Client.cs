@@ -159,13 +159,18 @@ namespace DarkKnight.Network
         /// </summary>
         public void Close()
         {
-            if (Connected)
+            lock (client)
             {
-                Connected = false;
+                if (Connected)
+                {
+                    Connected = false;
 
-                ClientWork.RemoveClientId(this.Id);
-                client.Close();
-                Application.connectionClosed(this);
+                    ClientWork.RemoveClientId(this.Id);
+                    client.Close();
+
+                    if (socketLayer != SocketLayer.undefined)
+                        Application.send(ApplicationSend.connectionClosed, new object[] { this });
+                }
             }
         }
 

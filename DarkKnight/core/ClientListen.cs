@@ -1,10 +1,8 @@
 ﻿using DarkKnight.core.Clients;
 using DarkKnight.Data;
 using DarkKnight.Network;
-using DarkKnight.Utils;
 using System;
 using System.Net.Sockets;
-using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -54,7 +52,6 @@ namespace DarkKnight.core
         {
             // getting the current client object
             ClientListen listen = (ClientListen)ar.AsyncState;
-
             try
             {
                 // we calling for handle received in endReceive
@@ -74,7 +71,9 @@ namespace DarkKnight.core
             // after restore the client object and also the received packet in original size, 
             // we release the client asynchronously to receive more packages
             // so we can optimize the delivery time of the package when many data are sent in a short time
-            asyncReceive(listen);
+            // we if this client socket is defined
+            if (listen.socketLayer != SocketLayer.undefined)
+                asyncReceive(listen);
 
             // from here we are already processing the package without worrying that we are delaying the arrival of new
 
@@ -90,7 +89,7 @@ namespace DarkKnight.core
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)
             {
-                if (IsPing(listen, received))
+                if (IsPing(received))
                     return;
 
                 byte[] decoded;
@@ -118,21 +117,25 @@ namespace DarkKnight.core
             {
                 // otherwise the socket is normal 'socket' layer
                 listen.socketLayer = SocketLayer.socket;
+                // this response is finalizing handshake for normal socket layer
                 listen.client.Send(new byte[] { 32, 32 });
             }
 
             // if we come here is because it was the first received packet,
             // we are sure that we've set the type of layer of SocketLayer that our client is,
             // so we will notify the application which new is connected
-            Application.connectionOpened(listen);
+            Application.send(ApplicationSend.connectionOpened, new object[] { listen });
+
+            // we release the cliente to receive packet
+            asyncReceive(listen);
         }
 
-        private bool IsPing(ClientListen listen, byte[] received)
+        private bool IsPing(byte[] received)
         {
             if (received.Length != 4)
                 return false;
 
-            if (Encoding.UTF8.GetString(received) != "Ping")
+            if ((received[0] + received[1] + received[2] + received[3]) != 398)
                 return false;
 
             return true;
@@ -177,25 +180,29 @@ namespace DarkKnight.core
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                Console.WriteLine("Client [" + listen.IPAddress.ToString() + "-"+listen.Id+"] sended a invalid package format [???] with no data");
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package format [???] with no data");
                 return;
             }
 
             // if allright, send to the application
-            Application.ReceivedPacket(listen, packet);
+            Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet });
+            //Application.ReceivedPacket(listen, packet);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)
         {
-            // security of return if the size received is zero
-            if (size == 0)
-                return new byte[1];
+            lock (buffer)
+            {
+                // security of return if the size received is zero
+                if (size == 0)
+                    return new byte[1];
 
-            byte[] pack = new byte[size];
+                byte[] pack = new byte[size];
 
-            Array.Copy(buffer, pack, size);
+                Array.Copy(buffer, pack, size);
 
-            return pack;
+                return pack;
+            }
         }
 
         /// <summary>
@@ -212,8 +219,7 @@ namespace DarkKnight.core
             {
                 // if we have an exception to receive a new package, it means that we have lost the connection with the client
                 // notify this to the application
-                if (listen.socketLayer != SocketLayer.undefined)
-                    listen.Close();
+                listen.Close();
             }
         }
     }
