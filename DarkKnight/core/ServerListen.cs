@@ -67,6 +67,9 @@ namespace DarkKnight.core
             // restore the socket object
             Socket server = (Socket)Result.AsyncState;
 
+            // get socket of client connected
+            Socket client = server.EndAccept(Result);
+
             // after we recover the object, release to accept more connections asynchronous
             // so we can optimize the queue requests for connection
             server.BeginAccept(new AsyncCallback(acceptConnection), server);
@@ -77,7 +80,7 @@ namespace DarkKnight.core
                 lock (server)
                 {
                     // we add the new connected client to the listener channel
-                    new ClientListen((Socket)server.EndAccept(Result), ++nextClientId);
+                    new ClientListen(client, ++nextClientId);
                 }
             }
             catch
