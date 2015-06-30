@@ -37,6 +37,13 @@ namespace DarkKnight.Utils
     {
         private static bool started = false;
 
+        /// <summary>
+        /// Ges and sets to enable de log print in Console.WriteLine
+        /// If true is printed in Console, otherwise not print
+        /// Default true
+        /// </summary>
+        public static bool printConsole = true;
+
         public static void Write(string msg)
         {
             Write(msg, LogLevel.TEXT);
@@ -82,7 +89,8 @@ namespace DarkKnight.Utils
             }
 
             writeLog(log, level);
-            Console.WriteLine(log);
+            if (printConsole)
+                Console.WriteLine(log);
         }
 
         private static string completeLine(string log, char complete)
