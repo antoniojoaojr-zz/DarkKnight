@@ -67,25 +67,28 @@ namespace DarkKnight.core
             // restore the socket object
             Socket server = (Socket)Result.AsyncState;
 
-            // get socket of client connected
-            Socket client = server.EndAccept(Result);
-
-            // after we recover the object, release to accept more connections asynchronous
-            // so we can optimize the queue requests for connection
-            server.BeginAccept(new AsyncCallback(acceptConnection), server);
-
             try
             {
+                // get socket of client connected
+                Socket client = server.EndAccept(Result);
+
                 // one thread per time
                 lock (server)
                 {
-                    // we add the new connected client to the listener channel
-                    new ClientListen(client, ++nextClientId);
+                    nextClientId++;
                 }
+
+                // we add the new connected client to the listener channel
+                new ClientListen(client, nextClientId);
             }
-            catch
+            catch (Exception ex)
             {
-                DarkKnight.Utils.Log.Write("A new client connected generate a error and not accepted", Utils.LogLevel.WARNING);
+                DarkKnight.Utils.Log.Write("A new client connected generate a error and not accepted: \n" + ex.Message + " - " + ex.StackTrace, Utils.LogLevel.ERROR);
+            }
+            finally
+            {
+                // release to accept more connections asynchronous
+                server.BeginAccept(new AsyncCallback(acceptConnection), server);
             }
         }
     }
