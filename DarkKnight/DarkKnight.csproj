@@ -55,7 +55,6 @@
     <Compile Include="Crypt\CryptProvider.cs" />
     <Compile Include="DarkKnightAppliaction.cs" />
     <Compile Include="Data\PacketCreator.cs" />
-    <Compile Include="DKAbstractReceiver.cs" />
     <Compile Include="IReceived.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="DKService.cs" />
@@ -64,9 +63,7 @@
     <Compile Include="Data\Packet.cs" />
     <Compile Include="Crypt\AbstractCrypt.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="Utils\PacketDictionary.cs" />
     <Compile Include="Data\PacketFormat.cs" />
-    <Compile Include="Utils\PacketMap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

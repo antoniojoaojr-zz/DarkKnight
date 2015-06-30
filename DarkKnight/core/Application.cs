@@ -46,8 +46,9 @@ namespace DarkKnight.core
         private static Queue<Application> callQueue = new Queue<Application>();
         private static int ThreadWorking = 0;
 
-        public object[] _objects;
-        public string _method;
+        private object _class;
+        private string _method;
+        private object[] _param;
 
         public static void work()
         {
@@ -58,9 +59,14 @@ namespace DarkKnight.core
             }
         }
 
-        public static void send(ApplicationSend method, object[] objects)
+        public static void send(ApplicationSend method, object[] param)
         {
-            callQueue.Enqueue(new Application() { _method = Enum.GetName(typeof(ApplicationSend), method), _objects = objects });
+            send(method, param, DarkKnightAppliaction.callback);
+        }
+
+        public static void send(ApplicationSend method, object[] param, object callback)
+        {
+            callQueue.Enqueue(new Application() { _class = callback, _method = Enum.GetName(typeof(ApplicationSend), method), _param = param });
         }
 
         private static void applicationCalling()
@@ -74,7 +80,7 @@ namespace DarkKnight.core
             try
             {
                 Application app = callQueue.Dequeue();
-                DarkKnightAppliaction.callback.GetType().GetMethod(app._method).Invoke(DarkKnightAppliaction.callback, app._objects);
+                app._class.GetType().GetMethod(app._method).Invoke(app._class, app._param);
             }
             catch (TargetInvocationException ex)
             {

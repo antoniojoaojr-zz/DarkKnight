@@ -184,9 +184,7 @@ namespace DarkKnight.core
                 return;
             }
 
-            // if allright, send to the application
             Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet });
-            //Application.ReceivedPacket(listen, packet);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)
