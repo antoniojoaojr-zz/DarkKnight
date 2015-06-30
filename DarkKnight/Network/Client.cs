@@ -82,6 +82,14 @@ namespace DarkKnight.Network
         protected SocketLayer socketLayer = SocketLayer.undefined;
 
         /// <summary>
+        /// Gets the client still connected
+        /// </summary>
+        public bool IsConnected
+        {
+            get { return Connected; }
+        }
+
+        /// <summary>
         /// Gets the IPAddress object of client connected
         /// </summary>
         public IPAddress IPAddress
