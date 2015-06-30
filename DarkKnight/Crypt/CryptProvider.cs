@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DarkKnight.Utils;
+using System;
+using System.Reflection;
 
 #region License Information
 /* ************************************************************
@@ -55,9 +57,9 @@ namespace DarkKnight.Crypt
                     GetMethod("decode").
                     Invoke(_crypt, new object[] { packet });
             }
-            catch
+            catch (TargetInvocationException ex)
             {
-                Console.WriteLine("[ERROR] class " + _crypt.GetType().Name + " responsable to decrypt generate a error and the package received is not descripted");
+                Log.Write(_crypt.GetType().Name + " responsable for decrypt - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace, LogLevel.ERROR);
                 // if the packet not be complet the decode, return the original packet from param
                 return packet;
             }
@@ -81,9 +83,9 @@ namespace DarkKnight.Crypt
                     GetMethod("encode").
                     Invoke(_crypt, new object[] { packet }); ;
             }
-            catch
+            catch (TargetInvocationException ex)
             {
-                Console.WriteLine("[ERROR] class " + _crypt.GetType().Name + " responsable to encrypt generate a error and the package to send is not cryptographed");
+                Log.Write(_crypt.GetType().Name + " responsable for encrypt - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace, LogLevel.ERROR);
                 // if the packet not be complet the encoded, return the original packet from param
                 return packet;
             }

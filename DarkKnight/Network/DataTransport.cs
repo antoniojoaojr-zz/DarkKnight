@@ -63,12 +63,18 @@ namespace DarkKnight.Network
         /// <param name="packet">array of bytes to send</param>
         public void Send(byte[] packet)
         {
+            if (packet.Length == 0 || packet == null)
+                return;
+
             // add the data in the queue
             queueData.Enqueue(packet);
 
             // if no thread working to send data
-            if (!asynSending)
-                BeginSend(queueData.Dequeue());
+            lock (client)
+            {
+                if (!asynSending)
+                    BeginSend(queueData.Dequeue());
+            }
         }
 
         private void BeginSend(byte[] data)
@@ -81,12 +87,6 @@ namespace DarkKnight.Network
 
                 // start sending data to the socket
                 socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendAsyncResult), socket);
-            }
-            catch (ArgumentNullException ex)
-            {
-                // try to send a null buffer to the client generate a exception
-                // notify is in a output log
-                Console.WriteLine("Null data to send a cliente is not accepted:\n" + ex.Message + " - " + ex.Source);
             }
             catch
             {

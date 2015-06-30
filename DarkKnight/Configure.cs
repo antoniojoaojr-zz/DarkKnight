@@ -30,6 +30,24 @@ namespace DarkKnight
 
         private int _ServerPort = 2111;
         private int _backlog = 50;
+        private int _MaxThread = 4;
+
+        /// <summary>
+        /// The higher the number, the less likely a row of access to your application.
+        /// Note that a very large number can also cause very slow performance of the processor.
+        /// The default value is 4
+        /// </summary>
+        public int MaxThreadWorking
+        {
+            get { return _MaxThread; }
+            set
+            {
+                if (1 > value)
+                    throw new Exception("Minimum 1 thread for work");
+
+                _MaxThread = value;
+            }
+        }
 
         /// <summary>
         /// Sets port with server work
@@ -40,6 +58,9 @@ namespace DarkKnight
             get { return _ServerPort; }
             set
             {
+                if (1 > value || 65535 < value)
+                    throw new Exception("Invalid port in configuration file");
+
                 _ServerPort = value;
             }
         }

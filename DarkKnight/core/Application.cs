@@ -2,7 +2,10 @@
 using DarkKnight.Network;
 using DarkKnight.Utils;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 
 #region License Information
 /* ************************************************************
@@ -29,58 +32,63 @@ using System.Text;
 
 namespace DarkKnight.core
 {
+    enum ApplicationSend
+    {
+        connectionOpened,
+        ReceivedPacket,
+        connectionClosed
+    }
     /// <summary>
     /// This class is responsable to communicate with application
     /// </summary>
     class Application
     {
-        public static void connectionOpened(Client client)
+        private static Queue<Application> callQueue = new Queue<Application>();
+        private static int ThreadWorking = 0;
+
+        private object _class;
+        private string _method;
+        private object[] _param;
+
+        public static void work()
         {
-            try
+            if (callQueue.Count > 0 && ThreadWorking < ServerController.config.MaxThreadWorking)
             {
-                DarkKnightAppliaction.callback.GetType().GetMethod("connectionOpened").Invoke(DarkKnightAppliaction.callback, new object[] { client });
-            }
-            catch
-            {
-                Console.WriteLine("[ERROR] Application generate a error in connectionOpened");
+                ThreadWorking++;
+                new Thread(new ThreadStart(applicationCalling)).Start();
             }
         }
 
-        public static void ReceivedPacket(Client client, Packet buffer)
+        public static void send(ApplicationSend method, object[] param)
         {
-            // we try restore a map of packet
-            DKAbstractReceiver callback = PacketDictionary.getmappin(Encoding.UTF8.GetBytes(buffer.format.getStringFormat));
-            try
-            {
-                // if map is restored
-                // send the packet to the application to the class mapped
-                // First ReceivedPacket(Client, Packet), finalliy run() to process
-                if (callback != null)
-                {
-                    callback.ReceivedPacket(client, buffer);
-                    callback.run();
-                }
-                else
-                {
-                    // otherwise, send the packet to the default service packet handler
-                    DarkKnightAppliaction.callback.GetType().GetMethod("ReceivedPacket").Invoke(DarkKnightAppliaction.callback, new object[] { client, buffer });
-                }
-            }
-            catch
-            {
-                Console.WriteLine("[ERROR] Application generate a error in ReceivedPacket");
-            }
+            send(method, param, DarkKnightAppliaction.callback);
         }
 
-        public static void connectionClosed(Client client)
+        public static void send(ApplicationSend method, object[] param, object callback)
         {
+            callQueue.Enqueue(new Application() { _class = callback, _method = Enum.GetName(typeof(ApplicationSend), method), _param = param });
+        }
+
+        private static void applicationCalling()
+        {
+            if (callQueue.Count == 0)
+            {
+                ThreadWorking--;
+                return;
+            }
+
             try
             {
-                DarkKnightAppliaction.callback.GetType().GetMethod("connectionClosed").Invoke(DarkKnightAppliaction.callback, new object[] { client });
+                Application app = callQueue.Dequeue();
+                app._class.GetType().GetMethod(app._method).Invoke(app._class, app._param);
             }
-            catch
+            catch (TargetInvocationException ex)
             {
-                Console.WriteLine("[ERROR] Application generate a error in connectionClosed");
+                Log.Write("Application generate a error - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace, LogLevel.ERROR);
+            }
+            finally
+            {
+                ThreadWorking--;
             }
         }
     }

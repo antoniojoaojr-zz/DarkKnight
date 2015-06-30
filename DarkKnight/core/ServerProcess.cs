@@ -1,6 +1,5 @@
-﻿using DarkKnight.Data;
-using DarkKnight.Network;
-using System;
+﻿using System;
+using System.Threading;
 
 #region License Information
 /* ************************************************************
@@ -25,20 +24,41 @@ using System;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight
+namespace DarkKnight.core
 {
-    public abstract class DKAbstractReceiver : IReceived
+
+    public delegate void ServerWork();
+
+    class ServerProcess
     {
-        /// <summary>
-        /// Is called when the buffer is ready for reading
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="buffer"></param>
-        public abstract void ReceivedPacket(Client client, Packet buffer);
+        private ServerWork _work;
+        private int _delay;
+
+        public ServerProcess(ServerWork work, int delay)
+        {
+            _work = work;
+            _delay = delay;
+        }
+
+        public void _working()
+        {
+            while (ServerController.ServerRunning)
+            {
+                _work();
+
+                if (_delay > 0)
+                    Thread.Sleep(_delay);
+            }
+        }
 
         /// <summary>
-        /// Is called after the method ReceivablePacket
+        /// Run a function when the server is online with e delay
         /// </summary>
-        public abstract void run();
+        /// <param name="work">DarkKnight.core.ServerWork delegation</param>
+        /// <param name="delay">int miliseconds</param>
+        public static void work(ServerWork work, int delay)
+        {
+            new Thread(new ThreadStart((new ServerProcess(work, delay)._working)));
+        }
     }
 }

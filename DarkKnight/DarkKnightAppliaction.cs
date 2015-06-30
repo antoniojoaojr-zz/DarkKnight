@@ -36,7 +36,8 @@ namespace DarkKnight
 
             _callback = setCallback;
 
-            new core.ServerListen().open(config);
+            core.ServerController.config = config;
+            new core.ServerListen().open();
         }
 
         public static Object callback

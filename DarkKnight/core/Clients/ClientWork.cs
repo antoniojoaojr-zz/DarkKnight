@@ -33,7 +33,7 @@ namespace DarkKnight.core.Clients
         private static Dictionary<int, ClientWork> clientsWork = new Dictionary<int, ClientWork>();
 
         public Client _client;
-        public DateTime time;
+        public DateTime time = DateTime.Now.AddMilliseconds(2400);
 
         public ClientWork(Client client)
         {
@@ -42,12 +42,20 @@ namespace DarkKnight.core.Clients
 
         public static void udpate(Client client)
         {
+            // we garanted one thread per time
             lock (client)
             {
                 if (!clientsWork.ContainsKey(client.Id))
                     clientsWork[client.Id] = new ClientWork(client);
+            }
 
+            try
+            {
                 clientsWork[client.Id].time = DateTime.Now.AddMilliseconds(2400);
+            }
+            catch
+            {
+
             }
         }
 
@@ -61,7 +69,7 @@ namespace DarkKnight.core.Clients
             }
             catch
             {
-                Console.WriteLine("[WARNING] Several error in core.Clients.ClientWork.RemoveInactiveClients()");
+                DarkKnight.Utils.Log.Write("Several error in core.Clients.ClientWork.RemoveInactiveClients()", Utils.LogLevel.WARNING);
             }
         }
 

@@ -82,6 +82,14 @@ namespace DarkKnight.Network
         protected SocketLayer socketLayer = SocketLayer.undefined;
 
         /// <summary>
+        /// Gets the client still connected
+        /// </summary>
+        public bool IsConnected
+        {
+            get { return Connected; }
+        }
+
+        /// <summary>
         /// Gets the IPAddress object of client connected
         /// </summary>
         public IPAddress IPAddress
@@ -159,13 +167,18 @@ namespace DarkKnight.Network
         /// </summary>
         public void Close()
         {
-            if (Connected)
+            lock (client)
             {
-                Connected = false;
+                if (Connected)
+                {
+                    Connected = false;
 
-                ClientWork.RemoveClientId(this.Id);
-                client.Close();
-                Application.connectionClosed(this);
+                    ClientWork.RemoveClientId(this.Id);
+                    client.Close();
+
+                    if (socketLayer != SocketLayer.undefined)
+                        Application.send(ApplicationSend.connectionClosed, new object[] { this });
+                }
             }
         }
 

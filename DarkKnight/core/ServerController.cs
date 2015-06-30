@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 
 #region License Information
 /* ************************************************************
@@ -28,16 +29,42 @@ namespace DarkKnight.core
 {
     class ServerController
     {
+        private static Configure _config = null;
         private static Socket socket;
-        private static bool Running = false;
+        private static bool _ServerRun = false;
+
+        /// <summary>
+        /// Gets the socket server is running
+        /// </summary>
+        public static bool ServerRunning
+        {
+            get { return _ServerRun; }
+        }
+
+        /// <summary>
+        /// Sets or gets a configure of the server
+        /// </summary>
+        public static Configure config
+        {
+            get { return _config; }
+            set
+            {
+                if (_config == null)
+                    _config = value;
+            }
+        }
+
 
         /// <summary>
         /// Close the socket server
         /// </summary>
         public static void CloseSever()
         {
-            Running = false;
+            _ServerRun = false;
             socket.Close();
+
+            Utils.Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -46,26 +73,22 @@ namespace DarkKnight.core
         /// <param name="_socket"></param>
         public static void setWork(Socket _socket)
         {
+            Utils.Log.Write("DarkKnight Server Started Successfully", Utils.LogLevel.TITLE);
             socket = _socket;
-            Running = true;
-            
-            // hack to keep the process running
-            RunningTimer();
+            _ServerRun = true;
+
+            ServerProcess.work(new ServerWork(Clients.ClientWork.RemoveInactiveClients), 1150);
+
+            RunApplication();
         }
 
-        private static void RunningTimer()
+        private static void RunApplication()
         {
-            // when Running is true,
-            // this loop keep the process running
-            while (Running)
+            while (_ServerRun)
             {
-                // remove clients inactive
-                DarkKnight.core.Clients.ClientWork.RemoveInactiveClients();
-
-                // Pass through the loop every second
-                System.Threading.Thread.Sleep(1000);
+                Application.work();
+                Thread.Sleep(1);
             }
         }
-
     }
 }
