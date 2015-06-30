@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 #region License Information
 /* ************************************************************
@@ -80,6 +81,7 @@ namespace DarkKnight.Utils
                     break;
             }
 
+            writeLog(log, level);
             Console.WriteLine(log);
         }
 
@@ -93,6 +95,57 @@ namespace DarkKnight.Utils
                 log += complete;
 
             return log;
+        }
+
+        private static void writeLog(string log, LogLevel level)
+        {
+            string file = "logs\\log-" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day;
+            try
+            {
+                writeFile(file + ".log", log);
+
+                if (level != LogLevel.TITLE)
+                {
+                    string type = Enum.GetName(typeof(LogLevel), level);
+                    writeFile(file + "-" + type + ".log", log);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private static void writeFile(string file, string log)
+        {
+
+            if (!Directory.Exists("logs"))
+                Directory.CreateDirectory("logs");
+
+            //string file = "logs\\log-" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + ".log";
+
+            if (!File.Exists(file))
+            {
+                using (StreamWriter sw = File.CreateText(file))
+                {
+                    writeChar(log, sw);
+                }
+                return;
+            }
+            using (StreamWriter sw = File.AppendText(file))
+            {
+                writeChar(log, sw);
+            }
+        }
+
+        private static void writeChar(string log, StreamWriter sw)
+        {
+            for (int i = 0; i < log.Length; i++)
+            {
+                if (i % 80 == 0)
+                    sw.WriteLine();
+                sw.Write(log[i]);
+            }
         }
     }
 }
