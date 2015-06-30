@@ -87,6 +87,7 @@ namespace DarkKnight.core
             while (_ServerRun)
             {
                 Application.work();
+                Thread.Sleep(1);
             }
         }
     }
