@@ -47,6 +47,7 @@ namespace DarkKnight.core
                 // if handler is fail, set a default invalid packet
                 _format = new PacketFormat("???");
                 _packet = new byte[] { };
+                _tryReceived = originalPacket;
             }
         }
 

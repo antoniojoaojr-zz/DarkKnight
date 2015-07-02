@@ -180,7 +180,15 @@ namespace DarkKnight.core
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package format [???] with no data");
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package, see package received in logs");
+
+                string invalidPacket = "";
+                for (int i = 0; i < packet.tryData.Length; i++)
+                {
+                    invalidPacket += packet.tryData[i] + " ";
+                }
+
+                DarkKnight.Utils.Log.Write("Invalid packate from [" + listen.IPAddress.ToString() + "] - " + invalidPacket, Utils.LogLevel.WARNING, false);
                 return;
             }
 

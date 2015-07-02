@@ -38,6 +38,11 @@ namespace DarkKnight.Data
         protected byte[] _packet;
 
         /// <summary>
+        /// The data try handle
+        /// </summary>
+        protected byte[] _tryReceived = null;
+
+        /// <summary>
         /// Get the format of this packet
         /// </summary>
         public PacketFormat format
@@ -51,6 +56,11 @@ namespace DarkKnight.Data
         public byte[] data
         {
             get { return _packet; }
+        }
+
+        public byte[] tryData
+        {
+            get { return _tryReceived; }
         }
     }
 }

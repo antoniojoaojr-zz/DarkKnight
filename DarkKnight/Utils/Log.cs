@@ -51,6 +51,12 @@ namespace DarkKnight.Utils
 
         public static void Write(string msg, LogLevel level)
         {
+            Write(msg, level, printConsole);
+        }
+
+        public static void Write(string msg, LogLevel level, bool _printConsole)
+        {
+
             if (!started)
             {
                 started = true;
@@ -89,7 +95,7 @@ namespace DarkKnight.Utils
             }
 
             writeLog(log, level);
-            if (printConsole)
+            if (_printConsole)
                 Console.WriteLine(log);
         }
 
