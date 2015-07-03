@@ -54,7 +54,7 @@ namespace DarkKnight.Network
         /// </summary>
         private DataTransport transportLayer;
 
-        protected CryptProvider cryptProvider = new CryptProvider();
+        private CryptProvider cryptProvider = new CryptProvider();
 
         private string _IPAddress;
 
@@ -77,6 +77,16 @@ namespace DarkKnight.Network
                 _IPAddress = ((IPEndPoint)_client.RemoteEndPoint).Address.ToString();
                 transportLayer = new DataTransport(this, _client);
             }
+        }
+
+        /// <summary>
+        /// Decode a byte data with cryptProvider
+        /// </summary>
+        /// <param name="data">the data to be decoded</param>
+        /// <returns></returns>
+        protected byte[] Decode(byte[] data)
+        {
+            return cryptProvider.encode(data);
         }
 
         /// <summary>

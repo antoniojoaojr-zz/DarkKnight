@@ -92,9 +92,9 @@ namespace DarkKnight.core
 
                 byte[] decoded;
                 if (listen.socketLayer == SocketLayer.websocket)
-                    decoded = listen.cryptProvider.decode(PacketWeb.decode(received));
+                    decoded = listen.Decode(PacketWeb.decode(received));
                 else
-                    decoded = listen.cryptProvider.decode(received);
+                    decoded = listen.Decode(received);
 
                 listen.toApplication(listen, new PacketHandler(decoded));
 
