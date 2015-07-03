@@ -143,21 +143,14 @@ namespace DarkKnight.core
         /// Send the packet to the server appliaction handler and process
         /// </summary>
         /// <param name="packet">Packet to send</param>
-        private void toApplication(ClientListen listen, Packet packet)
+        private void toApplication(ClientListen listen, PacketHandler packet)
         {
             // we make a finally validation of the packet in the server
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package, see package received in logs");
-
-                string invalidPacket = "";
-                for (int i = 0; i < packet.tryData.Length; i++)
-                {
-                    invalidPacket += packet.tryData[i] + " ";
-                }
-
-                DarkKnight.Utils.Log.Write("Invalid packate from [" + listen.IPAddress.ToString() + "] - " + invalidPacket, Utils.LogLevel.WARNING, false);
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package, see package received in WARNING logs");
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + "] invalid packet - [ " + packet.invalidData + " ]", Utils.LogLevel.WARNING, false);
                 return;
             }
 

@@ -35,6 +35,8 @@ namespace DarkKnight.core
         /// </summary>
         private byte[] originalPacket;
 
+        public string invalidData = null;
+
 
         public PacketHandler(byte[] packet)
         {
@@ -44,10 +46,12 @@ namespace DarkKnight.core
             // try handler packet
             if (!handlerPacket())
             {
-                // if handler is fail, set a default invalid packet
+                invalidData = "";
+                for (int i = 0; i < packet.Length; i++)
+                    invalidData += packet[i] + " ";
+
                 _format = new PacketFormat("???");
                 _packet = new byte[] { };
-                _tryReceived = originalPacket;
             }
         }
 
