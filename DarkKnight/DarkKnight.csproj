@@ -45,8 +45,6 @@
     <Compile Include="core\ClientListen.cs" />
     <Compile Include="core\Clients\ClientWork.cs" />
     <Compile Include="core\PacketHandler.cs" />
-    <Compile Include="core\Clients\Register.cs" />
-    <Compile Include="core\Clients\RegisterAbstract.cs" />
     <Compile Include="core\ServerListen.cs" />
     <Compile Include="core\PacketWeb.cs" />
     <Compile Include="core\Application.cs" />

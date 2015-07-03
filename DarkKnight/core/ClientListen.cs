@@ -77,9 +77,6 @@ namespace DarkKnight.core
 
             // from here we are already processing the package without worrying that we are delaying the arrival of new
 
-            // register the queue information registration of client
-            Registers(listen);
-
             // if size is zero, we do not continue sense, just abandon this method and release the thread
             if (size == 0)
                 return;
@@ -142,35 +139,6 @@ namespace DarkKnight.core
         }
 
         /// <summary>
-        /// Restore registor informed by the application, to store object of client
-        /// </summary>
-        /// <param name="listen"></param>
-        private void Registers(ClientListen listen)
-        {
-            // we try get a dequeue of registration
-            RegisterAbstract register = Register.GetValue(listen._ID);
-            // while dequeue of registration not null
-            // we make this
-            while (register != null)
-            {
-                // restore the object type
-                RegisterType type = register.getType;
-                // make selection by type of object
-                switch (type)
-                {
-                    case RegisterType.crypt:
-                        // if is crypt, register the crypt in the client
-                        listen._registerCrypt(register.getAbstract<Object>());
-                        break;
-                }
-
-                // try get a dequeue again of registration
-                register = Register.GetValue(listen._ID);
-            }
-        }
-
-
-        /// <summary>
         /// Send the packet to the server appliaction handler and process
         /// </summary>
         /// <param name="packet">Packet to send</param>
@@ -192,7 +160,7 @@ namespace DarkKnight.core
                 return;
             }
 
-            Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet });
+            Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet }, (listen._receiver != null) ? listen._receiver : DarkKnightAppliaction.callback);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)

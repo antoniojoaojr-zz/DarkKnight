@@ -50,10 +50,7 @@ namespace DarkKnight.Crypt
         /// <param name="crypt">object of classe to encode and decode</param>
         protected void register<T>(Client client, T crypt)
         {
-            if (!crypt.GetType().IsSubclassOf(typeof(AbstractCrypt)))
-                throw new Exception("The crypt param is a invalid class crypt for the server");
-
-            core.Clients.Register.Add(client.Id, core.Clients.RegisterType.crypt, crypt);
+            client.RegisterCrypt(crypt);
         }
     }
 }

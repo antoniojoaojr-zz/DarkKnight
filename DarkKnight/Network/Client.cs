@@ -59,6 +59,8 @@ namespace DarkKnight.Network
 
         private Socket _client;
 
+        protected Object _receiver = null;
+
         /// <summary>
         /// The socket object of this client
         /// </summary>
@@ -159,6 +161,32 @@ namespace DarkKnight.Network
         public void SendFormatedString(PacketFormat format, string toSend)
         {
             SendFormated(format, Encoding.UTF8.GetBytes(toSend));
+        }
+
+        /// <summary>
+        /// Register a class to receiver package from this client
+        /// </summary>
+        /// <typeparam name="T">The object receiver</typeparam>
+        /// <param name="receiver">The object receiver</param>
+        public void RegisterReceiver<T>(T receiver)
+        {
+            if (!receiver.GetType().IsAssignableFrom(typeof(IReceived)))
+                throw new Exception("The object receiver needs interface DarkKnight.IReceived");
+
+            _receiver = receiver;
+        }
+
+        /// <summary>
+        /// Register a cryptograph class for this client to encrypt and decrypt packaged send and receive
+        /// </summary>
+        /// <typeparam name="T">The object crypt</typeparam>
+        /// <param name="crypt">The object crypt</param>
+        public void RegisterCrypt<T>(T crypt)
+        {
+            if (!crypt.GetType().IsSubclassOf(typeof(AbstractCrypt)))
+                throw new Exception("The object of crypt is invalid, needs extends class DarkKnight.Crypt.AbstractCrypt");
+
+            _registerCrypt(crypt);
         }
 
         /// <summary>
