@@ -86,7 +86,7 @@ namespace DarkKnight.Network
         /// <returns></returns>
         protected byte[] Decode(byte[] data)
         {
-            return cryptProvider.encode(data);
+            return cryptProvider.decode(data);
         }
 
         /// <summary>
