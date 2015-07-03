@@ -1,5 +1,4 @@
-﻿using DarkKnight.core.Clients;
-using DarkKnight.Data;
+﻿using DarkKnight.Data;
 using DarkKnight.Network;
 using System;
 using System.Net.Sockets;
@@ -54,6 +53,9 @@ namespace DarkKnight.core
             ClientListen listen = (ClientListen)ar.AsyncState;
             try
             {
+                // update the signal of client
+                ClientSignal.udpate(listen);
+
                 // we calling for handle received in endReceive
                 ReceivedHandler(listen, listen.client.EndReceive(ar));
             }
@@ -81,7 +83,6 @@ namespace DarkKnight.core
             if (size == 0)
                 return;
 
-            ClientWork.udpate(listen);
 
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)
@@ -132,7 +133,7 @@ namespace DarkKnight.core
             if (received.Length != 4)
                 return false;
 
-            if ((received[0] + received[1] + received[2] + received[3]) != 398)
+            if (received[0] != 80 || received[1] != 105 || received[2] != 110 || received[3] != 103)
                 return false;
 
             return true;

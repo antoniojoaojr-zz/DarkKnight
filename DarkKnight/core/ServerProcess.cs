@@ -26,15 +26,12 @@ using System.Threading;
 
 namespace DarkKnight.core
 {
-
-    public delegate void ServerWork();
-
     class ServerProcess
     {
-        private ServerWork _work;
+        private Action _work;
         private int _delay;
 
-        public ServerProcess(ServerWork work, int delay)
+        public ServerProcess(Action work, int delay)
         {
             _work = work;
             _delay = delay;
@@ -54,11 +51,11 @@ namespace DarkKnight.core
         /// <summary>
         /// Run a function when the server is online with e delay
         /// </summary>
-        /// <param name="work">DarkKnight.core.ServerWork delegation</param>
+        /// <param name="work">Action to call</param>
         /// <param name="delay">int miliseconds</param>
-        public static void work(ServerWork work, int delay)
+        internal static void work(Action action, int delay)
         {
-            new Thread(new ThreadStart((new ServerProcess(work, delay)._working)));
+            new Thread(new ThreadStart(new ServerProcess(action, delay)._working));
         }
     }
 }

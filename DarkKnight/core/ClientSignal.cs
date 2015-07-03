@@ -26,62 +26,66 @@ using System.Linq;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.core.Clients
+namespace DarkKnight.core
 {
-    class ClientWork
+    class ClientSignal
     {
-        private static Dictionary<int, ClientWork> clientsWork = new Dictionary<int, ClientWork>();
+        private static Dictionary<int, ClientSignal> _clientSignal = new Dictionary<int, ClientSignal>();
 
-        public Client _client;
-        public DateTime time = DateTime.Now.AddMilliseconds(2400);
+        private Client _client;
+        private DateTime time = DateTime.Now.AddMilliseconds(2400);
 
-        public ClientWork(Client client)
+        public ClientSignal(Client client)
         {
             _client = client;
         }
 
+        /// <summary>
+        /// Update the time of this client to identify is alive
+        /// </summary>
+        /// <param name="client">DarkKnight.Network.Client object</param>
         public static void udpate(Client client)
         {
             // we garanted one thread per time
             lock (client)
             {
-                if (!clientsWork.ContainsKey(client.Id))
-                    clientsWork[client.Id] = new ClientWork(client);
+                if (!_clientSignal.ContainsKey(client.Id))
+                    _clientSignal[client.Id] = new ClientSignal(client);
             }
 
             try
             {
-                clientsWork[client.Id].time = DateTime.Now.AddMilliseconds(2400);
+                _clientSignal[client.Id].time = DateTime.Now.AddMilliseconds(2400);
             }
             catch
             {
-
+                // the client id not found in Dictionary, is okay
             }
         }
 
-        public static void RemoveInactiveClients()
+        public static void DiscardInactives()
         {
             try
             {
-                var clients = clientsWork.Where(x => x.Value.time < DateTime.Now).Select(x => new { client = x.Value._client }).ToList();
-                foreach (var resource in clients)
-                    resource.client.Close();
+                var clients = _clientSignal.Where(x => x.Value.time < DateTime.Now).Select(x => x.Value._client).ToList();
+                foreach (var client in clients)
+                    client.Close();
             }
             catch
             {
-                DarkKnight.Utils.Log.Write("Several error in core.Clients.ClientWork.RemoveInactiveClients()", Utils.LogLevel.WARNING);
+                DarkKnight.Utils.Log.Write("Several error in core.ClientSignal.DiscardInactives()", Utils.LogLevel.WARNING);
             }
         }
 
-        public static void RemoveClientId(int clientId)
+        public static void Remove(int clientId)
         {
             try
             {
-                clientsWork.Remove(clientId);
+                _clientSignal.Remove(clientId);
             }
             catch
             {
-
+                // the client id not found in Dictionary, is okay
             }
         }
 

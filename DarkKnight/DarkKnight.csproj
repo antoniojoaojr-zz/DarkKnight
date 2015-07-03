@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Configure.cs" />
     <Compile Include="core\ClientListen.cs" />
-    <Compile Include="core\Clients\ClientWork.cs" />
+    <Compile Include="core\ClientSignal.cs" />
     <Compile Include="core\PacketHandler.cs" />
     <Compile Include="core\ServerListen.cs" />
     <Compile Include="core\PacketWeb.cs" />

@@ -1,5 +1,4 @@
 ﻿using DarkKnight.core;
-using DarkKnight.core.Clients;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
@@ -195,18 +194,22 @@ namespace DarkKnight.Network
         /// </summary>
         public void Close()
         {
+            // one thread per time, prevent two or more thread call Close() in same time and generate duplicate notifications
             lock (client)
             {
-                if (Connected)
-                {
-                    Connected = false;
+                if (!Connected)
+                    return;
 
-                    ClientWork.RemoveClientId(this.Id);
-                    client.Close();
+                // sets connected false
+                Connected = false;
+                // remove the client from signal
+                ClientSignal.Remove(Id);
+                // close the socket
+                _client.Close();
 
-                    if (socketLayer != SocketLayer.undefined)
-                        Application.send(ApplicationSend.connectionClosed, new object[] { this });
-                }
+                // if the socket have a type and defined, notification the application is desconnected
+                if (socketLayer != SocketLayer.undefined)
+                    Application.send(ApplicationSend.connectionClosed, new object[] { this });
             }
         }
 

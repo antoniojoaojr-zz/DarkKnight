@@ -77,7 +77,7 @@ namespace DarkKnight.core
             socket = _socket;
             _ServerRun = true;
 
-            ServerProcess.work(new ServerWork(Clients.ClientWork.RemoveInactiveClients), 1150);
+            ServerProcess.work(ClientSignal.DiscardInactives, 1150);
 
             RunApplication();
         }
