@@ -27,7 +27,7 @@ using System.Reflection;
 
 namespace DarkKnight.Crypt
 {
-    public abstract class CryptProvider
+    class CryptProvider
     {
         /// <summary>
         /// The crypt class registered
@@ -44,7 +44,7 @@ namespace DarkKnight.Crypt
         /// </summary>
         /// <param name="packet">array of byte to decode</param>
         /// <returns>if no error, the array of byte decoded, if generate a error return the original array of byte</returns>
-        protected byte[] _decode(byte[] packet)
+        public byte[] decode(byte[] packet)
         {
             // if no have registed crypt class, return the packet without decoding
             if (!_registed)
@@ -70,7 +70,7 @@ namespace DarkKnight.Crypt
         /// </summary>
         /// <param name="packet">array of byte to encode</param>
         /// <returns>if no error, the array of byte encoded, if a error return the original array of byte</returns>
-        protected byte[] _encode(byte[] packet)
+        public byte[] encode(byte[] packet)
         {
             // if no have registed crypt class, return the packet without encoding
             if (!_registed)
@@ -95,7 +95,7 @@ namespace DarkKnight.Crypt
         /// Return true if crypt class is registed
         /// otherwise false
         /// </summary>
-        protected bool _cryptRegisted
+        public bool cryptRegisted
         {
             get { return _registed; }
         }
@@ -104,7 +104,7 @@ namespace DarkKnight.Crypt
         /// Register a crypt class in the memory
         /// </summary>
         /// <param name="crypt">The AbstractCrypt extended class</param>
-        protected void _registerCrypt<T>(T crypt)
+        public void registerCrypt<T>(T crypt)
         {
             _crypt = crypt;
             _registed = true;

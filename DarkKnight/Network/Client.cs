@@ -37,7 +37,7 @@ namespace DarkKnight.Network
         socket,
         websocket
     }
-    public abstract class Client : CryptProvider
+    public abstract class Client
     {
         /// <summary>
         /// Gets the client status
@@ -53,6 +53,8 @@ namespace DarkKnight.Network
         /// The layer provider to server sends data for client
         /// </summary>
         private DataTransport transportLayer;
+
+        protected CryptProvider cryptProvider = new CryptProvider();
 
         private string _IPAddress;
 
@@ -185,7 +187,7 @@ namespace DarkKnight.Network
             if (!crypt.GetType().IsSubclassOf(typeof(AbstractCrypt)))
                 throw new Exception("The object of crypt is invalid, needs extends class DarkKnight.Crypt.AbstractCrypt");
 
-            _registerCrypt(crypt);
+            cryptProvider.registerCrypt(crypt);
         }
 
         /// <summary>
@@ -223,9 +225,9 @@ namespace DarkKnight.Network
             byte[] data;
             // if this client is a websocket, encode package with a packetweb
             if (socketLayer == SocketLayer.websocket)
-                data = PacketWeb.encode(_encode(packet.data));
+                data = PacketWeb.encode(cryptProvider.encode(packet.data));
             else // otherwise return packet encode
-                data = _encode(packet.data);
+                data = cryptProvider.encode(packet.data);
 
             // send the data
             transportLayer.Send(data);
