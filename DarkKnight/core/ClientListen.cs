@@ -154,7 +154,8 @@ namespace DarkKnight.core
                 return;
             }
 
-            Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet }, (listen._receiver != null) ? listen._receiver : DarkKnightAppliaction.callback);
+            foreach (Packet p in packet.packetHandled)
+                Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, p }, (listen._receiver != null) ? listen._receiver : DarkKnightAppliaction.callback);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)

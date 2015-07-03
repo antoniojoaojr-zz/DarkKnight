@@ -55,7 +55,7 @@ namespace DarkKnight.core
         /// <param name="delay">int miliseconds</param>
         internal static void work(Action action, int delay)
         {
-            new Thread(new ThreadStart(new ServerProcess(action, delay)._working));
+            new Thread(new ThreadStart(new ServerProcess(action, delay)._working)).Start();
         }
     }
 }
