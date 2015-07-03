@@ -31,11 +31,6 @@ namespace DarkKnight.core
 {
     class PacketHandler : Packet
     {
-        /// <summary>
-        /// The real package received from a client socket
-        /// </summary>
-        private byte[] packet;
-
         public string invalidData = null;
 
         public List<Packet> packetHandled = new List<Packet>();
