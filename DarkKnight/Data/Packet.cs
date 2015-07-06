@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -43,6 +44,14 @@ namespace DarkKnight.Data
         public PacketFormat format
         {
             get { return _format; }
+        }
+
+        /// <summary>
+        /// Get the data received in string format
+        /// </summary>
+        public string dataString
+        {
+            get { return Encoding.UTF8.GetString(_packet); }
         }
 
         /// <summary>

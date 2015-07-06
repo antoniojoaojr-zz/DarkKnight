@@ -1,5 +1,4 @@
 ﻿using DarkKnight.core;
-using DarkKnight.core.Clients;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
@@ -38,7 +37,7 @@ namespace DarkKnight.Network
         socket,
         websocket
     }
-    public abstract class Client : CryptProvider
+    public abstract class Client
     {
         /// <summary>
         /// Gets the client status
@@ -55,9 +54,13 @@ namespace DarkKnight.Network
         /// </summary>
         private DataTransport transportLayer;
 
+        private CryptProvider cryptProvider = new CryptProvider();
+
         private string _IPAddress;
 
         private Socket _client;
+
+        protected Object _receiver = null;
 
         /// <summary>
         /// The socket object of this client
@@ -74,6 +77,16 @@ namespace DarkKnight.Network
                 _IPAddress = ((IPEndPoint)_client.RemoteEndPoint).Address.ToString();
                 transportLayer = new DataTransport(this, _client);
             }
+        }
+
+        /// <summary>
+        /// Decode a byte data with cryptProvider
+        /// </summary>
+        /// <param name="data">the data to be decoded</param>
+        /// <returns></returns>
+        protected byte[] Decode(byte[] data)
+        {
+            return cryptProvider.decode(data);
         }
 
         /// <summary>
@@ -162,23 +175,53 @@ namespace DarkKnight.Network
         }
 
         /// <summary>
+        /// Register a class to receiver package from this client
+        /// </summary>
+        /// <typeparam name="T">The object receiver</typeparam>
+        /// <param name="receiver">The object receiver</param>
+        public void RegisterReceiver<T>(T receiver)
+        {
+            if (!receiver.GetType().IsAssignableFrom(typeof(IReceived)))
+                throw new Exception("The object receiver needs interface DarkKnight.IReceived");
+
+            _receiver = receiver;
+        }
+
+        /// <summary>
+        /// Register a cryptograph class for this client to encrypt and decrypt packaged send and receive
+        /// </summary>
+        /// <typeparam name="T">The object crypt</typeparam>
+        /// <param name="crypt">The object crypt</param>
+        public void RegisterCrypt<T>(T crypt)
+        {
+            if (!crypt.GetType().IsSubclassOf(typeof(AbstractCrypt)))
+                throw new Exception("The object of crypt is invalid, needs extends class DarkKnight.Crypt.AbstractCrypt");
+
+            cryptProvider.registerCrypt(crypt);
+        }
+
+        /// <summary>
         /// Close the connection with the client
         /// Call 'connectionClosed' of your application that extends the DKService when the connection is closed successfully
         /// </summary>
         public void Close()
         {
+            // one thread per time, prevent two or more thread call Close() in same time and generate duplicate notifications
             lock (client)
             {
-                if (Connected)
-                {
-                    Connected = false;
+                if (!Connected)
+                    return;
 
-                    ClientWork.RemoveClientId(this.Id);
-                    client.Close();
+                // sets connected false
+                Connected = false;
+                // remove the client from signal
+                ClientSignal.Remove(Id);
+                // close the socket
+                _client.Close();
 
-                    if (socketLayer != SocketLayer.undefined)
-                        Application.send(ApplicationSend.connectionClosed, new object[] { this });
-                }
+                // if the socket have a type and defined, notification the application is desconnected
+                if (socketLayer != SocketLayer.undefined)
+                    Application.send(ApplicationSend.connectionClosed, new object[] { this });
             }
         }
 
@@ -192,9 +235,9 @@ namespace DarkKnight.Network
             byte[] data;
             // if this client is a websocket, encode package with a packetweb
             if (socketLayer == SocketLayer.websocket)
-                data = PacketWeb.encode(_encode(packet.data));
+                data = PacketWeb.encode(cryptProvider.encode(packet.data));
             else // otherwise return packet encode
-                data = _encode(packet.data);
+                data = cryptProvider.encode(packet.data);
 
             // send the data
             transportLayer.Send(data);

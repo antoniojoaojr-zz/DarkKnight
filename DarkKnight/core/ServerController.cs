@@ -61,10 +61,6 @@ namespace DarkKnight.core
         public static void CloseSever()
         {
             _ServerRun = false;
-            socket.Close();
-
-            Utils.Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);
-            Console.ReadKey();
         }
 
         /// <summary>
@@ -77,7 +73,7 @@ namespace DarkKnight.core
             socket = _socket;
             _ServerRun = true;
 
-            ServerProcess.work(new ServerWork(Clients.ClientWork.RemoveInactiveClients), 1150);
+            ServerProcess.work(ClientSignal.DiscardInactives, 1150);
 
             RunApplication();
         }
@@ -89,6 +85,10 @@ namespace DarkKnight.core
                 Application.work();
                 Thread.Sleep(1);
             }
+            socket.Close();
+
+            Utils.Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);
+            Console.ReadKey();
         }
     }
 }

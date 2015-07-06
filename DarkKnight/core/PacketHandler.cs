@@ -1,6 +1,7 @@
 ﻿using DarkKnight.Crypt;
 using DarkKnight.Data;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 #region License Information
@@ -30,21 +31,19 @@ namespace DarkKnight.core
 {
     class PacketHandler : Packet
     {
-        /// <summary>
-        /// The real package received from a client socket
-        /// </summary>
-        private byte[] originalPacket;
+        public string invalidData = null;
 
+        public List<Packet> packetHandled = new List<Packet>();
 
-        public PacketHandler(byte[] packet)
+        public PacketHandler(byte[] _packet)
         {
-            // we get original packet
-            originalPacket = packet;
-
             // try handler packet
-            if (!handlerPacket())
+            if (!handlerPacket(_packet))
             {
-                // if handler is fail, set a default invalid packet
+                invalidData = "";
+                for (int i = 0; i < _packet.Length; i++)
+                    invalidData += _packet[i] + " ";
+
                 _format = new PacketFormat("???");
                 _packet = new byte[] { };
             }
@@ -55,39 +54,40 @@ namespace DarkKnight.core
         /// We took the package format and also took the given package.
         /// </summary>
         /// <returns>true if packet is handled with success</returns>
-        private bool handlerPacket()
+        private bool handlerPacket(byte[] packet)
         {
             int lengthFormat = 0;
             int lengthFormatPosition = 0;
 
             do
             {
-                lengthFormat += originalPacket[lengthFormatPosition];
+                lengthFormat += packet[lengthFormatPosition];
                 lengthFormatPosition++;
-                if (lengthFormatPosition >= originalPacket.Length || lengthFormat > originalPacket.Length)
+                if (lengthFormatPosition >= packet.Length || lengthFormat > packet.Length)
                     return false;
 
-            } while (originalPacket[lengthFormatPosition] > 0);
+            } while (packet[lengthFormatPosition] > 0);
 
             int lengthData = 0;
             int lengthDataPosition = lengthFormat + lengthFormatPosition + 1;
 
-            if (lengthDataPosition >= originalPacket.Length)
+            if (lengthDataPosition >= packet.Length)
                 return false;
 
             do
             {
-                lengthData += originalPacket[lengthDataPosition];
+                lengthData += packet[lengthDataPosition];
                 lengthDataPosition++;
-                if (lengthDataPosition >= originalPacket.Length || lengthData > originalPacket.Length)
+                if (lengthDataPosition >= packet.Length || lengthData > packet.Length)
                     return false;
 
-            } while (originalPacket[lengthDataPosition] > 0);
+            } while (packet[lengthDataPosition] > 0);
 
 
             int lengthDataLengthInformation = lengthDataPosition - (lengthFormat + lengthFormatPosition + 1);
+            int totalDataLength = lengthData + lengthFormat + lengthFormatPosition + lengthDataLengthInformation + 2;
 
-            if (originalPacket.Length != lengthData + lengthFormat + lengthFormatPosition + lengthDataLengthInformation + 2)
+            if (packet.Length < totalDataLength)
                 return false;
 
             try
@@ -95,12 +95,20 @@ namespace DarkKnight.core
                 byte[] format = new byte[lengthFormat];
                 _packet = new byte[lengthData];
 
-                Array.Copy(originalPacket, lengthFormatPosition + 1, format, 0, lengthFormat);
-                Array.Copy(originalPacket, lengthDataPosition + 1, _packet, 0, lengthData);
+                Array.Copy(packet, lengthFormatPosition + 1, format, 0, lengthFormat);
+                Array.Copy(packet, lengthDataPosition + 1, _packet, 0, lengthData);
 
                 _format = new PacketFormat(Encoding.UTF8.GetString(format));
 
-                return true;
+                packetHandled.Add(this);
+
+                if (packet.Length == totalDataLength)
+                    return true;
+
+                byte[] morePacket = new byte[packet.Length - totalDataLength];
+                Array.Copy(packet, totalDataLength, morePacket, 0, packet.Length - totalDataLength);
+
+                return handlerPacket(morePacket);
             }
             catch
             {

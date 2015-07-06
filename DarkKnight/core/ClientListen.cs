@@ -1,5 +1,4 @@
-﻿using DarkKnight.core.Clients;
-using DarkKnight.Data;
+﻿using DarkKnight.Data;
 using DarkKnight.Network;
 using System;
 using System.Net.Sockets;
@@ -54,6 +53,9 @@ namespace DarkKnight.core
             ClientListen listen = (ClientListen)ar.AsyncState;
             try
             {
+                // update the signal of client
+                ClientSignal.udpate(listen);
+
                 // we calling for handle received in endReceive
                 ReceivedHandler(listen, listen.client.EndReceive(ar));
             }
@@ -77,14 +79,10 @@ namespace DarkKnight.core
 
             // from here we are already processing the package without worrying that we are delaying the arrival of new
 
-            // register the queue information registration of client
-            Registers(listen);
-
             // if size is zero, we do not continue sense, just abandon this method and release the thread
             if (size == 0)
                 return;
 
-            ClientWork.udpate(listen);
 
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)
@@ -94,9 +92,9 @@ namespace DarkKnight.core
 
                 byte[] decoded;
                 if (listen.socketLayer == SocketLayer.websocket)
-                    decoded = listen._decode(PacketWeb.decode(received));
+                    decoded = listen.Decode(PacketWeb.decode(received));
                 else
-                    decoded = listen._decode(received);
+                    decoded = listen.Decode(received);
 
                 listen.toApplication(listen, new PacketHandler(decoded));
 
@@ -135,56 +133,29 @@ namespace DarkKnight.core
             if (received.Length != 4)
                 return false;
 
-            if ((received[0] + received[1] + received[2] + received[3]) != 398)
+            if (received[0] != 80 || received[1] != 105 || received[2] != 110 || received[3] != 103)
                 return false;
 
             return true;
         }
 
         /// <summary>
-        /// Restore registor informed by the application, to store object of client
-        /// </summary>
-        /// <param name="listen"></param>
-        private void Registers(ClientListen listen)
-        {
-            // we try get a dequeue of registration
-            RegisterAbstract register = Register.GetValue(listen._ID);
-            // while dequeue of registration not null
-            // we make this
-            while (register != null)
-            {
-                // restore the object type
-                RegisterType type = register.getType;
-                // make selection by type of object
-                switch (type)
-                {
-                    case RegisterType.crypt:
-                        // if is crypt, register the crypt in the client
-                        listen._registerCrypt(register.getAbstract<Object>());
-                        break;
-                }
-
-                // try get a dequeue again of registration
-                register = Register.GetValue(listen._ID);
-            }
-        }
-
-
-        /// <summary>
         /// Send the packet to the server appliaction handler and process
         /// </summary>
         /// <param name="packet">Packet to send</param>
-        private void toApplication(ClientListen listen, Packet packet)
+        private void toApplication(ClientListen listen, PacketHandler packet)
         {
             // we make a finally validation of the packet in the server
             // if the packet is invalid, just print a log in the output
             if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
             {
-                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package format [???] with no data");
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package, see package received in WARNING logs");
+                DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + "] invalid packet - [ " + packet.invalidData + " ]", Utils.LogLevel.WARNING, false);
                 return;
             }
 
-            Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, packet });
+            foreach (Packet p in packet.packetHandled)
+                Application.send(ApplicationSend.ReceivedPacket, new object[] { listen, p }, (listen._receiver != null) ? listen._receiver : DarkKnightAppliaction.callback);
         }
 
         private byte[] getReceivedPacket(byte[] buffer, int size)
