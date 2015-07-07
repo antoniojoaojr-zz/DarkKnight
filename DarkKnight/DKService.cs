@@ -27,7 +27,7 @@ using System;
 
 namespace DarkKnight
 {
-    public abstract class DKService : IReceived
+    public abstract class DKService
     {
         /// <summary>
         /// Is called when new client is connected to the server

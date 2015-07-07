@@ -1,6 +1,7 @@
 ﻿using DarkKnight.core;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
+using DarkKnight.Utils;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -212,16 +213,24 @@ namespace DarkKnight.Network
                 if (!Connected)
                     return;
 
-                // sets connected false
-                Connected = false;
-                // remove the client from signal
-                ClientSignal.Remove(Id);
-                // close the socket
-                _client.Close();
-
-                // if the socket have a type and defined, notification the application is desconnected
-                if (socketLayer != SocketLayer.undefined)
-                    Application.send(ApplicationSend.connectionClosed, new object[] { this });
+                try
+                {                 // sets connected false
+                    Connected = false;
+                    // remove the client from signal
+                    ClientSignal.Remove(Id);
+                    // close the socket
+                    _client.Close();
+                }
+                catch (Exception ex)
+                {
+                    Log.Write("Error when disconnect client " + ex.Message + " - " + ex.StackTrace, LogLevel.ERROR);
+                }
+                finally
+                {
+                    // if the socket have a type and defined, notification the application is desconnected
+                    if (socketLayer != SocketLayer.undefined)
+                        Application.send(ApplicationSend.connectionClosed, new object[] { this });
+                }
             }
         }
 

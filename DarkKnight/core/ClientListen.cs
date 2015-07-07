@@ -53,9 +53,6 @@ namespace DarkKnight.core
             ClientListen listen = (ClientListen)ar.AsyncState;
             try
             {
-                // update the signal of client
-                ClientSignal.udpate(listen);
-
                 // we calling for handle received in endReceive
                 ReceivedHandler(listen, listen.client.EndReceive(ar));
             }
@@ -83,6 +80,8 @@ namespace DarkKnight.core
             if (size == 0)
                 return;
 
+            // update the signal of client
+            ClientSignal.udpate(listen);
 
             // if the SocketLayer of this client is defined just we handle the packet
             if (listen.socketLayer != SocketLayer.undefined)

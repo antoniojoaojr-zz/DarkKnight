@@ -43,22 +43,6 @@ namespace DarkKnight.core
     /// </summary>
     class Application
     {
-        private static Queue<Application> callQueue = new Queue<Application>();
-        private static int ThreadWorking = 0;
-
-        private object _class;
-        private string _method;
-        private object[] _param;
-
-        public static void work()
-        {
-            if (callQueue.Count > 0 && ThreadWorking < ServerController.config.MaxThreadWorking)
-            {
-                ThreadWorking++;
-                new Thread(new ThreadStart(applicationCalling)).Start();
-            }
-        }
-
         public static void send(ApplicationSend method, object[] param)
         {
             send(method, param, DarkKnightAppliaction.callback);
@@ -66,29 +50,13 @@ namespace DarkKnight.core
 
         public static void send(ApplicationSend method, object[] param, object callback)
         {
-            callQueue.Enqueue(new Application() { _class = callback, _method = Enum.GetName(typeof(ApplicationSend), method), _param = param });
-        }
-
-        private static void applicationCalling()
-        {
-            if (callQueue.Count == 0)
-            {
-                ThreadWorking--;
-                return;
-            }
-
             try
             {
-                Application app = callQueue.Dequeue();
-                app._class.GetType().GetMethod(app._method).Invoke(app._class, app._param);
+                callback.GetType().GetMethod(Enum.GetName(typeof(ApplicationSend), method)).Invoke(callback, param);
             }
             catch (TargetInvocationException ex)
             {
                 Log.Write("Application generate a error - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace, LogLevel.ERROR);
-            }
-            finally
-            {
-                ThreadWorking--;
             }
         }
     }
