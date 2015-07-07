@@ -82,8 +82,7 @@ namespace DarkKnight.core
         {
             while (_ServerRun)
             {
-                Application.work();
-                Thread.Sleep(1);
+                Thread.Sleep(1000);
             }
             socket.Close();
 

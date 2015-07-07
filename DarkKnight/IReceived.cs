@@ -27,8 +27,8 @@ using System;
 
 namespace DarkKnight
 {
-    interface IReceived
+    public interface IReceived
     {
-        void ReceivedPacket(Client client, Packet buffer);
+        void ReceivedPacket(Client client, Packet packet);
     }
 }
