@@ -229,7 +229,10 @@ namespace DarkKnight.Network
                 {
                     // if the socket have a type and defined, notification the application is desconnected
                     if (socketLayer != SocketLayer.undefined)
+                    {
                         Application.send(ApplicationSend.connectionClosed, new object[] { this });
+                        socketLayer = SocketLayer.undefined;
+                    }
                 }
             }
         }
