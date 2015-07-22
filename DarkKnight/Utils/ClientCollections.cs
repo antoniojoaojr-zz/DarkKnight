@@ -2,7 +2,6 @@
 using DarkKnight.Data;
 using DarkKnight.Network;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 #region License Information
@@ -40,7 +39,7 @@ namespace DarkKnight.Utils
         private Dictionary<int, Client> c = new Dictionary<int, Client>();
 
         /// <summary>
-        /// Add a client to a dictionary
+        /// Add a client to a collection
         /// </summary>
         /// <param name="client">DarkKnight.Network.Client object</param>
         public void Add(Client client)
@@ -49,7 +48,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Remove a client from a dictionary
+        /// Remove a client from a collection
         /// </summary>
         /// <param name="client">DarkKnight.Network.Client object</param>
         public void Remove(Client client)
@@ -65,8 +64,13 @@ namespace DarkKnight.Utils
             }
         }
 
+        public bool Contains(Client client)
+        {
+            return c.ContainsKey(client.Id) ? true : false;
+        }
+
         /// <summary>
-        /// Get all clients in dictionary
+        /// Get all clients in collection
         /// </summary>
         /// <returns>List<DarkKnight.Network.Client> object</returns>
         public List<Client> getClients()
@@ -84,7 +88,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Send a byte to all clients in list
+        /// Send a byte to client collection
         /// </summary>
         /// <param name="toSend">byte to send</param>
         public void Send(byte toSend)
@@ -93,7 +97,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Send a array of bytes 8-bits to the all clients in list
+        /// Send a array of bytes 8-bits to the client collection
         /// </summary>
         /// <param name="toSend">The array of bytes to send</param>
         public void Send(byte[] toSend)
@@ -102,7 +106,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Send a UTF8 String to the all clients in list
+        /// Send a UTF8 String to the client collection
         /// </summary>
         /// <param name="toSend">The string to send</param>
         public void SendString(string toSend)
@@ -111,7 +115,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Send a mapped with format to the all clients in list
+        /// Send a mapped with format to the client collection
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         public void SendFormated(PacketFormat format)
@@ -120,7 +124,7 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        /// Send a array of bytes 8-bits mapped with format to the all clients in list
+        /// Send a array of bytes 8-bits mapped with format to the client collection
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the int to send</param>
@@ -130,13 +134,23 @@ namespace DarkKnight.Utils
         }
 
         /// <summary>
-        ///  Send a UTF8 String mapped with format to the all clients in list
+        ///  Send a UTF8 String mapped with format to the client collection
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the string to send</param>
         public void SendFormatedString(PacketFormat format, string toSend)
         {
             SendFormated(format, Encoding.UTF8.GetBytes(toSend));
+        }
+
+        /// <summary>
+        /// Send a object to the client collection in json serialized format
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
+        /// <param name="toSend">the object to send</param>
+        public void SendFormatedObject(PacketFormat format, object toSend)
+        {
+            callMethod("SendFormatedObject", new object[] { format, toSend });
         }
 
         private void callMethod(string method, object[] param)

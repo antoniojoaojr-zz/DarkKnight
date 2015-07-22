@@ -36,10 +36,8 @@ namespace DarkKnight.core.Network
         public int Id;
 
         /// <summary>
-        /// Methods in the object
-        /// string: name of method
-        /// object: data returned of the method
+        /// The public data of the object
         /// </summary>
-        public Dictionary<string, object> Methods;
+        public Dictionary<string, object> ObjectData;
     }
 }

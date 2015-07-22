@@ -1,8 +1,11 @@
 ﻿using DarkKnight.core;
+using DarkKnight.core.Network;
 using DarkKnight.Crypt;
 using DarkKnight.Data;
 using DarkKnight.Utils;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -173,6 +176,31 @@ namespace DarkKnight.Network
         public void SendFormatedString(PacketFormat format, string toSend)
         {
             SendFormated(format, Encoding.UTF8.GetBytes(toSend));
+        }
+
+        /// <summary>
+        /// Send a object to the client in json serialized format
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
+        /// <param name="toSend">the object to send</param>
+        public void SendFormatedObject(PacketFormat format, object toSend)
+        {
+            if (!toSend.GetType().Equals(typeof(ObjectStream)))
+            {
+                if (!toSend.GetType().IsSubclassOf(typeof(ObjectSerialize)))
+                    throw new Exception("Invalid object to send, needs ObjectSerialize extension or ObjectStream type");
+
+                Dictionary<string, object> objectToSend = new Dictionary<string, object>();
+                objectToSend["Object"] = toSend;
+
+                ObjectStream stream = new ObjectStream();
+                stream.Id = ((ObjectSerialize)toSend).objectId;
+                stream.ObjectData = objectToSend;
+
+                SendFormatedString(format, JsonConvert.SerializeObject(stream));
+            }
+            else
+                SendFormatedString(format, JsonConvert.SerializeObject(toSend));
         }
 
         /// <summary>

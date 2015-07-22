@@ -29,12 +29,27 @@ namespace DarkKnight.Data
     /// <summary>
     /// Formats that are used internally by DarkKnight
     /// </summary>
-    public enum DarkKnightFormat
+    public enum DefaultFormat
     {
         /// <summary>
-        /// It is a serialized object in json
+        /// New radius information stream
         /// </summary>
-        dk_JStreamObj
+        JRadiusStream,
+
+        /// <summary>
+        /// New view information stream
+        /// </summary>
+        JViewStream,
+
+        /// <summary>
+        /// New target information stream
+        /// </summary>
+        JTargetStream,
+
+        /// <summary>
+        /// Exit target information
+        /// </summary>
+        JExitTargetStream
     }
 
     /// <summary>
@@ -47,9 +62,9 @@ namespace DarkKnight.Data
         /// </summary>
         /// <param name="format">DarkKnight.Data.DarkKnightFormat enum format</param>
         /// <returns>string of name of enum</returns>
-        public static string DarkKnightFormat(DarkKnightFormat format)
+        public static PacketFormat Format(DefaultFormat format)
         {
-            return Enum.GetName(typeof(Data.DarkKnightFormat), format);
+            return new PacketFormat(Enum.GetName(typeof(Data.DefaultFormat), format));
         }
 
         private string format = null;
