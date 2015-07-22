@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configure.cs" />
+    <Compile Include="core\Network\ObjectMethodsController.cs" />
+    <Compile Include="Utils\ClientCollections.cs" />
     <Compile Include="core\ClientListen.cs" />
     <Compile Include="core\ClientSignal.cs" />
     <Compile Include="core\PacketHandler.cs" />
@@ -57,11 +63,19 @@
     <Compile Include="Network\Client.cs" />
     <Compile Include="DKService.cs" />
     <Compile Include="Network\DataTransport.cs" />
+    <Compile Include="core\Network\ObjectMethods.cs" />
+    <Compile Include="core\Network\ObjectController.cs" />
+    <Compile Include="core\Network\ObjectStream.cs" />
+    <Compile Include="Network\NetworkView.cs" />
+    <Compile Include="core\Network\ObjectViewer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Packet.cs" />
     <Compile Include="Crypt\AbstractCrypt.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Data\PacketFormat.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

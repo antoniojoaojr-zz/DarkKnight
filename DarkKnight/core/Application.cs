@@ -50,13 +50,19 @@ namespace DarkKnight.core
 
         public static void send(ApplicationSend method, object[] param, object callback)
         {
+            calling(Enum.GetName(typeof(ApplicationSend), method), param, callback);
+        }
+
+        public static object calling(string method, object[] param, object callback)
+        {
             try
             {
-                callback.GetType().GetMethod(Enum.GetName(typeof(ApplicationSend), method)).Invoke(callback, param);
+                return callback.GetType().GetMethod(method).Invoke(callback, param);
             }
             catch (TargetInvocationException ex)
             {
                 Log.Write("Application generate a error - " + ex.InnerException.Message + "\n" + ex.InnerException.StackTrace, LogLevel.ERROR);
+                return null;
             }
         }
     }

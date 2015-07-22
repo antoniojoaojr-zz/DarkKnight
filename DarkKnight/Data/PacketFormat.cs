@@ -27,10 +27,31 @@ using System.Text;
 namespace DarkKnight.Data
 {
     /// <summary>
+    /// Formats that are used internally by DarkKnight
+    /// </summary>
+    public enum DarkKnightFormat
+    {
+        /// <summary>
+        /// It is a serialized object in json
+        /// </summary>
+        dk_JStreamObj
+    }
+
+    /// <summary>
     /// Class represents the format of a packet
     /// </summary>
     public class PacketFormat
     {
+        /// <summary>
+        /// Get a name of a DarkKnight packet format
+        /// </summary>
+        /// <param name="format">DarkKnight.Data.DarkKnightFormat enum format</param>
+        /// <returns>string of name of enum</returns>
+        public static string DarkKnightFormat(DarkKnightFormat format)
+        {
+            return Enum.GetName(typeof(Data.DarkKnightFormat), format);
+        }
+
         private string format = null;
 
         /// <summary>
