@@ -29,17 +29,30 @@ using System.Reflection;
 
 namespace DarkKnight.Network
 {
-    public enum StreamAccess
+    /// <summary>
+    /// This enumeration defines the interaction of a player with an object
+    /// </summary>
+    public enum toPlayer
     {
         /// <summary>
-        /// All client in the radius view the method
+        /// All players who this in the object distance
         /// </summary>
-        Public,
+        Radius,
 
         /// <summary>
-        /// Only clients who are looking for the object capture this information
+        /// All players who is seeing the object
         /// </summary>
-        Private,
+        Viewing,
+
+        /// <summary>
+        /// All players who target this object
+        /// </summary>
+        Target,
+
+        /// <summary>
+        /// The player who owns the object
+        /// </summary>
+        Owner
     }
 
     /// <summary>
@@ -47,7 +60,20 @@ namespace DarkKnight.Network
     /// </summary>
     public class NetworkViewAttribute : Attribute
     {
-        public StreamAccess streamAccess = StreamAccess.Private;
+        private toPlayer _permission;
+
+        public NetworkViewAttribute(toPlayer permission)
+        {
+            _permission = permission;
+        }
+
+        public toPlayer Permission
+        {
+            get
+            {
+                return _permission;
+            }
+        }
     }
 
     /// <summary>
@@ -68,6 +94,7 @@ namespace DarkKnight.Network
                 throw new Exception("Invalid object, the object needs extends DarkKnight.Network.NetworkView class");
 
             _networkController = new ObjectController(GetMethodView(objectWatcher));
+            _networkController.Update();
         }
 
         /// <summary>
@@ -86,32 +113,33 @@ namespace DarkKnight.Network
             {
                 foreach (Attribute attr in Attribute.GetCustomAttributes(mInfo))
                 {
-                    if (attr.GetType() != typeof(NetworkViewAttribute))
-                        continue;
-
-                    if (!mInfo.ReturnType.IsAssignableFrom(typeof(int)) &&
-                        !mInfo.ReturnType.IsAssignableFrom(typeof(byte)) &&
-                        !mInfo.ReturnType.IsAssignableFrom(typeof(string)) &&
-                        !mInfo.ReturnType.IsAssignableFrom(typeof(float)) &&
-                        !mInfo.ReturnType.IsAssignableFrom(typeof(double)) &&
-                        !mInfo.ReturnType.IsAssignableFrom(typeof(long)))
+                    if (attr.GetType() == typeof(NetworkViewAttribute))
                     {
-                        Log.Write("Invalid NetworkView attribute in " + objectWatcher.GetType().Name + "." + mInfo.Name + "(), the return data not valid", LogLevel.WARNING);
-                        continue;
+
+                        if (!mInfo.ReturnType.IsAssignableFrom(typeof(int)) &&
+                            !mInfo.ReturnType.IsAssignableFrom(typeof(byte)) &&
+                            !mInfo.ReturnType.IsAssignableFrom(typeof(string)) &&
+                            !mInfo.ReturnType.IsAssignableFrom(typeof(float)) &&
+                            !mInfo.ReturnType.IsAssignableFrom(typeof(double)) &&
+                            !mInfo.ReturnType.IsAssignableFrom(typeof(long)))
+                        {
+                            Log.Write("Invalid NetworkView attribute in " + objectWatcher.GetType().Name + "." + mInfo.Name + "(), the return data not valid", LogLevel.WARNING);
+                            continue;
+                        }
+
+                        if (mInfo.GetParameters().Length > 0)
+                        {
+                            Log.Write("Invalidt NetworkView attribute in " + objectWatcher.GetType().Name + "." + mInfo.Name + "(), the method can not have an parameter", LogLevel.WARNING);
+                            continue;
+                        }
+
+                        ObjectMethodsController methodsController = new ObjectMethodsController();
+                        methodsController.setReference(objectWatcher);
+                        methodsController.setMethod(mInfo.Name);
+                        methodsController.setNetworkAccess(((NetworkViewAttribute)attr).Permission);
+
+                        methods.Add(methodsController);
                     }
-
-                    if (mInfo.GetParameters().Length > 0)
-                    {
-                        Log.Write("Invalidt NetworkView attribute in " + objectWatcher.GetType().Name + "." + mInfo.Name + "(), the method can not have an parameter", LogLevel.WARNING);
-                        continue;
-                    }
-
-                    ObjectMethodsController methodsController = new ObjectMethodsController();
-                    methodsController.setReference(objectWatcher);
-                    methodsController.setMethod(mInfo.Name);
-                    methodsController.setNetworkAccess(((NetworkViewAttribute)attr).streamAccess);
-
-                    methods.Add(methodsController);
                 }
             }
 

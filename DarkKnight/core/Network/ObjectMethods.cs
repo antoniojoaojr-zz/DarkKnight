@@ -31,7 +31,7 @@ namespace DarkKnight.core.Network
         protected Object _reference;
         protected string _method;
         protected object _data = null;
-        protected StreamAccess _networkAccess;
+        protected toPlayer _networkAccess;
 
         public Object reference
         {
@@ -48,7 +48,7 @@ namespace DarkKnight.core.Network
             get { return _data; }
         }
 
-        public StreamAccess networkAccess
+        public toPlayer networkAccess
         {
             get { return _networkAccess; }
         }

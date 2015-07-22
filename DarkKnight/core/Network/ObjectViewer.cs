@@ -33,8 +33,10 @@ namespace DarkKnight.core.Network
         private int Id = ObjectController.objectInstance;
         private Dictionary<string, object> _dataView = new Dictionary<string, object>();
         private Dictionary<string, object> _dataRadius = new Dictionary<string, object>();
+        private Dictionary<string, object> _dataTarget = new Dictionary<string, object>();
         private ClientCollections clientView = new ClientCollections();
         private ClientCollections clientRadius = new ClientCollections();
+        private ClientCollections clientTarget = new ClientCollections();
 
         /// <summary>
         /// Called when new client in the radius of this object
@@ -55,12 +57,12 @@ namespace DarkKnight.core.Network
         public void ExitRadius(Client client)
         {
             clientRadius.Remove(client);
+            clientTarget.Remove(client);
         }
 
         /// <summary>
         /// Called when a object update data for the clients in the radius
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="dataRadius"></param>
         protected void UpdateRadius(Dictionary<string, object> dataRadius)
         {
@@ -92,12 +94,42 @@ namespace DarkKnight.core.Network
         /// <summary>
         /// Called when a object update data for the clients view this
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="dataView"></param>
         protected void UpdateView(Dictionary<string, object> dataView)
         {
             clientView.SendFormatedString(new Data.PacketFormat(Data.PacketFormat.DarkKnightFormat(Data.DarkKnightFormat.dk_JStreamObj)),
                 JsonConvert.SerializeObject(new ObjectStream() { Id = Id, Methods = UpdateMethods(ref _dataView, dataView) }));
+        }
+
+        /// <summary>
+        /// Called when a new client target this object
+        /// </summary>
+        /// <param name="client">DarkKnight.Network.Client object</param>
+        public void EnterTarget(Client client)
+        {
+            client.SendFormatedString(new Data.PacketFormat(Data.PacketFormat.DarkKnightFormat(Data.DarkKnightFormat.dk_JStreamObj)),
+                JsonConvert.SerializeObject(new ObjectStream() { Id = Id, Methods = _dataTarget }));
+
+            clientTarget.Add(client);
+        }
+
+        /// <summary>
+        /// Called when client cancel target in this object
+        /// </summary>
+        /// <param name="client">DarkKnight.Network.Client object</param>
+        public void ExitTarget(Client client)
+        {
+            clientTarget.Remove(client);
+        }
+
+        /// <summary>
+        /// Called when a object update data for the clients in target
+        /// </summary>
+        /// <param name="dataTarget"></param>
+        public void UpdateTarget(Dictionary<string, object> dataTarget)
+        {
+            clientTarget.SendFormatedString(new Data.PacketFormat(Data.PacketFormat.DarkKnightFormat(Data.DarkKnightFormat.dk_JStreamObj)),
+                JsonConvert.SerializeObject(new ObjectStream() { Id = Id, Methods = UpdateMethods(ref _dataTarget, dataTarget) }));
         }
 
         private Dictionary<string, object> UpdateMethods(ref Dictionary<string, object> objectStart, Dictionary<string, object> objectCompare)

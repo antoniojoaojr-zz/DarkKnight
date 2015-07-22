@@ -38,7 +38,7 @@ namespace DarkKnight.core.Network
             _method = method;
         }
 
-        public void setNetworkAccess(StreamAccess networkAccess)
+        public void setNetworkAccess(toPlayer networkAccess)
         {
             _networkAccess = networkAccess;
         }

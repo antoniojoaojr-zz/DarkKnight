@@ -46,7 +46,6 @@ namespace DarkKnight.core.Network
         public ObjectController(List<ObjectMethods> methods)
         {
             _methods = methods;
-            Update();
         }
 
         /// <summary>
@@ -56,20 +55,37 @@ namespace DarkKnight.core.Network
         {
             Dictionary<string, object> radiusSend = new Dictionary<string, object>();
             Dictionary<string, object> viewSend = new Dictionary<string, object>();
+            Dictionary<string, object> targetSend = new Dictionary<string, object>();
+
             foreach (ObjectMethods method in _methods)
             {
                 if (method.Update())
                 {
-                    if (method.networkAccess == StreamAccess.Private)
-                        viewSend[method.name] = method.data;
-                    else radiusSend[method.name] = method.data;
+                    switch (method.networkAccess)
+                    {
+                        case toPlayer.Viewing:
+                            viewSend[method.name] = method.data;
+                            break;
+                        case toPlayer.Radius:
+                            radiusSend[method.name] = method.data;
+                            break;
+                        case toPlayer.Target:
+                            targetSend[method.name] = method.data;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
             if (radiusSend.Count > 0)
                 UpdateRadius(radiusSend);
+
             if (viewSend.Count > 0)
                 UpdateView(viewSend);
+
+            if (targetSend.Count > 0)
+                UpdateTarget(targetSend);
         }
     }
 }
