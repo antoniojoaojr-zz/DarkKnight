@@ -34,6 +34,7 @@ namespace DarkKnight.core
         private static Configure _config = null;
         private static Socket socket;
         private static bool _ServerRun = false;
+        private static ManualResetEvent _ServerWork = new ManualResetEvent(false);
 
         /// <summary>
         /// Gets the socket server is running
@@ -63,6 +64,7 @@ namespace DarkKnight.core
         public static void CloseSever()
         {
             _ServerRun = false;
+            _ServerWork.Set();
         }
 
         /// <summary>
@@ -75,19 +77,15 @@ namespace DarkKnight.core
             socket = _socket;
             _ServerRun = true;
 
-            Task.newTask(ClientSignal.DiscardInactives, 1150);
+            TaskManager.StartAllTask();
+            new Task(ClientSignal.DiscardInactives, 1150);
 
             RunApplication();
         }
 
         private static void RunApplication()
         {
-            TaskManager.ServerRunning();
-
-            while (_ServerRun)
-            {
-                Thread.Sleep(1000);
-            }
+            _ServerWork.WaitOne();
             socket.Close();
 
             Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);

@@ -28,9 +28,8 @@ namespace DarkKnight.core.Tasks
 {
     class TaskManager
     {
-        private static int _TaskId = 1;
+        private static int _TaskId = 0;
         private static Dictionary<int, TaskProcess> DictionaryTask = new Dictionary<int, TaskProcess>();
-        private static Dictionary<int, TaskWait> ServerWait = new Dictionary<int, TaskWait>();
 
         /// <summary>
         /// Create a new taks to server
@@ -42,9 +41,9 @@ namespace DarkKnight.core.Tasks
         {
             int taskId = _TaskId++;
 
-            if (!ServerController.ServerRunning)
-                ServerWait.Add(taskId, new TaskWait() { action = action, delay = delay });
-            else DictionaryTask.Add(taskId, new TaskProcess(action, delay));
+            DictionaryTask.Add(taskId, new TaskProcess(action, delay));
+            if (ServerController.ServerRunning)
+                DictionaryTask[taskId].resume();
 
             return taskId;
         }
@@ -114,19 +113,13 @@ namespace DarkKnight.core.Tasks
         /// <summary>
         /// Run all taks in server start wait
         /// </summary>
-        public static void ServerRunning()
+        public static void StartAllTask()
         {
-            foreach (KeyValuePair<int, TaskWait> task in ServerWait)
-                DictionaryTask.Add(task.Key, new TaskProcess(task.Value.action, task.Value.delay));
-
-            ServerWait.Clear();
+            foreach (KeyValuePair<int, TaskProcess> task in DictionaryTask)
+            {
+                if (!task.Value.isRunning)
+                    task.Value.resume();
+            }
         }
-    }
-
-
-    class TaskWait
-    {
-        public Action action;
-        public int delay;
     }
 }

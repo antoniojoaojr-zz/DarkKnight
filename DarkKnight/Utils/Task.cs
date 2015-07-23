@@ -28,63 +28,49 @@ namespace DarkKnight.Utils
 {
     public class Task
     {
+        private int taskId;
+
         /// <summary>
         /// Create a new task to server
         /// </summary>
-        /// <param name="action">The method called in task</param>
-        /// <param name="delay">The delay in milleseconds</param>
-        /// <returns>Task Id</returns>
-        public static int newTask(Action action, int delay)
+        /// <param name="action">Action for this task</param>
+        /// <param name="delay">Delay in milleseconds</param>
+        public Task(Action action, int delay)
         {
-            return TaskManager.newTask(action, delay);
+            taskId = TaskManager.newTask(action, delay);
         }
 
         /// <summary>
-        /// Checks task is running
+        /// Check task is running
         /// </summary>
-        /// <param name="taskId">TaskId</param>
-        /// <returns>True if task is runing otherwise false</returns>
-        public static bool isRunning(int taskId)
+        public bool isRunning
         {
-            return TaskManager.isRunning(taskId);
+            get { return TaskManager.isRunning(taskId); }
         }
 
         /// <summary>
-        /// Checks a taskId exist in the server
+        /// Pause this task
         /// </summary>
-        /// <param name="taskId">TaskId</param>
-        /// <returns>True if taskId exists otherwise false</returns>
-        public static bool taskExists(int taskId)
-        {
-            return TaskManager.taskExists(taskId);
-        }
-
-        /// <summary>
-        /// Pause a task
-        /// </summary>
-        /// <param name="taskId">TaskId</param>
-        /// <exception cref="System.Exception">taskId not found</exception>
-        public static void pauseTask(int taskId)
+        /// <exception cref="System.Exception">Task not found</exception>
+        public void pause()
         {
             TaskManager.pauseTask(taskId);
         }
 
         /// <summary>
-        /// Resume paused task
+        /// Resume a paused task
         /// </summary>
-        /// <param name="taskId">TaskId</param>
-        /// <exception cref="System.Exception">taskId not found</exception>
-        public static void resumeTask(int taskId)
+        /// <exception cref="System.Exception">Task not found</exception>
+        public void resume()
         {
             TaskManager.resumeTask(taskId);
         }
 
         /// <summary>
-        /// Stop task and romeve from server
+        /// Stop task and remove from server
         /// </summary>
-        /// <param name="taskId">taskId</param>
-        /// <exception cref="System.Exception">taskId not found</exception>
-        public static void stopTask(int taskId)
+        /// <exception cref="System.Exception">Task not found</exception>
+        public void stop()
         {
             TaskManager.stopTask(taskId);
         }

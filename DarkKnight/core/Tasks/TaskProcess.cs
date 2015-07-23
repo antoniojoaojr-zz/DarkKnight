@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkKnight.Utils;
+using System;
 using System.Threading;
 
 #region License Information
@@ -36,8 +37,6 @@ namespace DarkKnight.core.Tasks
         {
             _work = work;
             _delay = delay == 0 ? 1 : delay;
-
-            resume();
         }
 
         /// <summary>
@@ -70,8 +69,18 @@ namespace DarkKnight.core.Tasks
             _running = true;
             while (ServerController.ServerRunning && _running)
             {
-                _work();
-                Thread.Sleep(_delay);
+                try
+                {
+                    _work();
+                }
+                catch (Exception ex)
+                {
+                    Log.Write("Error in running task " + ex.Message + " - " + ex.StackTrace + " - " + ex.InnerException.Message + " - " + ex.InnerException.StackTrace, LogLevel.ERROR);
+                }
+                finally
+                {
+                    Thread.Sleep(_delay);
+                }
             }
             _running = false;
         }
