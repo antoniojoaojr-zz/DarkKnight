@@ -5,7 +5,6 @@ using DarkKnight.Data;
 using DarkKnight.Utils;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -190,14 +189,8 @@ namespace DarkKnight.Network
                 if (!toSend.GetType().IsSubclassOf(typeof(ObjectSerialize)))
                     throw new Exception("Invalid object to send, needs ObjectSerialize extension or ObjectStream type");
 
-                Dictionary<string, object> objectToSend = new Dictionary<string, object>();
-                objectToSend["Object"] = toSend;
-
-                ObjectStream stream = new ObjectStream();
-                stream.Id = ((ObjectSerialize)toSend).objectId;
-                stream.ObjectData = objectToSend;
-
-                SendFormatedString(format, JsonConvert.SerializeObject(stream));
+                SendFormatedString(format,
+                    JsonConvert.SerializeObject(new ObjectStream() { Id = ((ObjectSerialize)toSend).objectId, ObjectData = ObjectController.objectData(toSend) }));
             }
             else
                 SendFormatedString(format, JsonConvert.SerializeObject(toSend));

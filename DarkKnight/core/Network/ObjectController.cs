@@ -41,6 +41,19 @@ namespace DarkKnight.core.Network
             }
         }
 
+        /// <summary>
+        /// Gets a dictionary object
+        /// </summary>
+        /// <param name="obj">object to add in a dictionary</param>
+        /// <returns>Dictionary object</returns>
+        public static Dictionary<string, object> objectData(object obj)
+        {
+            Dictionary<string, object> objectData = new Dictionary<string, object>();
+            objectData.Add("Object", obj);
+
+            return objectData;
+        }
+
         private List<ObjectMethods> _methods;
 
         public ObjectController(List<ObjectMethods> methods)
