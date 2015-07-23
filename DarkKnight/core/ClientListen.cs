@@ -35,11 +35,9 @@ namespace DarkKnight.core
         /// </summary>
         private byte[] listenBuffer = new byte[65535];
 
-        public ClientListen(Socket socket, int id)
+        public ClientListen(Socket socket)
+            : base(socket)
         {
-            client = socket;
-            _ID = id;
-
             asyncReceive(this);
         }
 

@@ -24,38 +24,56 @@ using System.Threading;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.core
+namespace DarkKnight.core.Tasks
 {
-    class ServerProcess
+    class TaskProcess
     {
         private Action _work;
         private int _delay;
+        private bool _running = false;
 
-        public ServerProcess(Action work, int delay)
+        public TaskProcess(Action work, int delay)
         {
             _work = work;
-            _delay = delay;
-        }
+            _delay = delay == 0 ? 1 : delay;
 
-        public void _working()
-        {
-            while (ServerController.ServerRunning)
-            {
-                _work();
-
-                if (_delay > 0)
-                    Thread.Sleep(_delay);
-            }
+            resume();
         }
 
         /// <summary>
-        /// Run a function when the server is online with e delay
+        /// Pause this task
         /// </summary>
-        /// <param name="work">Action to call</param>
-        /// <param name="delay">int miliseconds</param>
-        internal static void work(Action action, int delay)
+        public void pause()
         {
-            new Thread(new ThreadStart(new ServerProcess(action, delay)._working)).Start();
+            _running = false;
+        }
+
+        /// <summary>
+        /// Running this task
+        /// </summary>
+        public void resume()
+        {
+            if (!_running)
+                new Thread(new ThreadStart(Run)).Start();
+        }
+
+        /// <summary>
+        /// Gets this task is running
+        /// </summary>
+        public bool isRunning
+        {
+            get { return _running; }
+        }
+
+        private void Run()
+        {
+            _running = true;
+            while (ServerController.ServerRunning && _running)
+            {
+                _work();
+                Thread.Sleep(_delay);
+            }
+            _running = false;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace DarkKnight.Network
         /// <summary>
         /// The session id of this client
         /// </summary>
-        protected int _ID;
+        private int _ID = ServerListen.getUniqueClientId;
 
         /// <summary>
         /// The layer provider to server sends data for client
@@ -74,12 +74,6 @@ namespace DarkKnight.Network
             {
                 return _client;
             }
-            set
-            {
-                _client = value;
-                _IPAddress = ((IPEndPoint)_client.RemoteEndPoint).Address.ToString();
-                transportLayer = new DataTransport(this, _client);
-            }
         }
 
         /// <summary>
@@ -96,6 +90,13 @@ namespace DarkKnight.Network
         /// The layer of the socket is work
         /// </summary>
         protected SocketLayer socketLayer = SocketLayer.undefined;
+
+        public Client(Socket socket)
+        {
+            _client = socket;
+            _IPAddress = ((IPEndPoint)_client.RemoteEndPoint).Address.ToString();
+            transportLayer = new DataTransport(this, _client);
+        }
 
         /// <summary>
         /// Gets the client still connected

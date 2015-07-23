@@ -30,7 +30,15 @@ namespace DarkKnight.core
 {
     class ServerListen
     {
-        private int nextClientId = 1000;
+        private static int client_id = 1;
+
+        /// <summary>
+        /// Get unique client id
+        /// </summary>
+        public static int getUniqueClientId
+        {
+            get { return client_id++; }
+        }
 
         /// <summary>
         /// The method is responsible for starting a server on a specific port
@@ -72,14 +80,8 @@ namespace DarkKnight.core
                 // get socket of client connected
                 Socket client = server.EndAccept(Result);
 
-                // one thread per time
-                lock (server)
-                {
-                    nextClientId++;
-                }
-
                 // we add the new connected client to the listener channel
-                new ClientListen(client, nextClientId);
+                new ClientListen(client);
             }
             catch (Exception ex)
             {

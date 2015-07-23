@@ -64,9 +64,14 @@ namespace DarkKnight.Utils
             }
         }
 
+        /// <summary>
+        /// Checks DarkKnight.Network.Client object exists in collection
+        /// </summary>
+        /// <param name="client">DarkKnight.Network.Client object</param>
+        /// <returns>True if client exists in collection false otherwise</returns>
         public bool Contains(Client client)
         {
-            return c.ContainsKey(client.Id) ? true : false;
+            return c.ContainsKey(client.Id);
         }
 
         /// <summary>
@@ -79,9 +84,9 @@ namespace DarkKnight.Utils
 
             foreach (Client client in c.Values)
             {
-                if (!client.IsConnected)
-                    Remove(client);
-                else clients.Add(client);
+                if (client.IsConnected)
+                    clients.Add(client);
+                else Remove(client);
             }
 
             return clients;
@@ -157,9 +162,9 @@ namespace DarkKnight.Utils
         {
             foreach (Client client in c.Values)
             {
-                if (!client.IsConnected)
-                    Remove(client);
-                else Application.calling(method, param, client);
+                if (client.IsConnected)
+                    Application.calling(method, param, client);
+                else Remove(client);
             }
         }
     }

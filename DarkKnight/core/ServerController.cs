@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DarkKnight.core.Tasks;
+using DarkKnight.Utils;
+using System;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -69,24 +71,26 @@ namespace DarkKnight.core
         /// <param name="_socket"></param>
         public static void setWork(Socket _socket)
         {
-            Utils.Log.Write("DarkKnight Server Started Successfully", Utils.LogLevel.TITLE);
+            Log.Write("DarkKnight Server Started Successfully", Utils.LogLevel.TITLE);
             socket = _socket;
             _ServerRun = true;
 
-            ServerProcess.work(ClientSignal.DiscardInactives, 1150);
+            Task.newTask(ClientSignal.DiscardInactives, 1150);
 
             RunApplication();
         }
 
         private static void RunApplication()
         {
+            TaskManager.ServerRunning();
+
             while (_ServerRun)
             {
                 Thread.Sleep(1000);
             }
             socket.Close();
 
-            Utils.Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);
+            Log.Write("DarkKnight Server finished", Utils.LogLevel.TEXT);
             Console.ReadKey();
         }
     }

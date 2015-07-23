@@ -1,4 +1,4 @@
-﻿using DarkKnight.Data;
+﻿using DarkKnight.Network;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -26,7 +26,7 @@ using System.Net.Sockets;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Network
+namespace DarkKnight.core.Network
 {
     class DataTransport
     {
