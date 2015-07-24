@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
-using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -26,7 +25,7 @@ using System.Security.Cryptography;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.core
+namespace DarkKnight.core.Packets
 {
     class PacketWeb
     {

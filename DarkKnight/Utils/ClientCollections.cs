@@ -1,5 +1,4 @@
 ﻿using DarkKnight.core;
-using DarkKnight.Data;
 using DarkKnight.Network;
 using System.Collections.Generic;
 using System.Text;
@@ -123,7 +122,7 @@ namespace DarkKnight.Utils
         /// Send a mapped with format to the client collection
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
-        public void SendFormated(PacketFormat format)
+        public void SendFormated(object format)
         {
             callMethod("SendFormated", new object[] { format });
         }
@@ -133,7 +132,7 @@ namespace DarkKnight.Utils
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the int to send</param>
-        public void SendFormated(PacketFormat format, byte[] toSend)
+        public void SendFormated(object format, byte[] toSend)
         {
             callMethod("SendFormated", new object[] { format, toSend });
         }
@@ -143,7 +142,7 @@ namespace DarkKnight.Utils
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the string to send</param>
-        public void SendFormatedString(PacketFormat format, string toSend)
+        public void SendFormatedString(object format, string toSend)
         {
             SendFormated(format, Encoding.UTF8.GetBytes(toSend));
         }
@@ -153,7 +152,7 @@ namespace DarkKnight.Utils
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the object to send</param>
-        public void SendFormatedObject(PacketFormat format, object toSend)
+        public void SendFormatedObject(object format, object toSend)
         {
             callMethod("SendFormatedObject", new object[] { format, toSend });
         }

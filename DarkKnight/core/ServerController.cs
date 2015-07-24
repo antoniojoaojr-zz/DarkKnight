@@ -73,6 +73,8 @@ namespace DarkKnight.core
         /// <param name="_socket"></param>
         public static void setWork(Socket _socket)
         {
+            Packets.FormatController.registerDefault();
+
             Log.Write("DarkKnight Server Started Successfully", Utils.LogLevel.TITLE);
             socket = _socket;
             _ServerRun = true;

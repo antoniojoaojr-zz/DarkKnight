@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkKnight.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -25,7 +26,7 @@ using System.Text;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.Data
+namespace DarkKnight.core.Packets
 {
     class PacketCreator
     {
@@ -48,23 +49,29 @@ namespace DarkKnight.Data
         /// <param name="data">array of bytes data</param>
         public PacketCreator(byte[] data)
         {
-            Creator(new PacketFormat("???"), data);
+            Creator((int)DefaultFormat.NoFormatSelected, data);
         }
 
         /// <summary>
         /// Create data formated with a format
         /// </summary>
-        /// <param name="format">DarkKnight.Data.PacketFormat object</param>
+        /// <param name="format">Enum or Int packet format data</param>
         /// <param name="data">array of bytes data</param>
-        public PacketCreator(PacketFormat format, byte[] data)
+        public PacketCreator(object format, byte[] data)
         {
-            Creator(format, data);
+            if (!format.GetType().IsEnum && !format.GetType().IsAssignableFrom(typeof(int)))
+                throw new Exception("Invalid packet format type");
+
+            if (!FormatController.formatExists((int)format))
+                throw new Exception("Invalid packet format, the format not registred");
+
+            Creator((int)format, data);
         }
 
-        private void Creator(PacketFormat format, byte[] data)
+        private void Creator(int format, byte[] data)
         {
             // create format
-            byte[] packetFormat = formatingPacket(format.getByteArrayFormat);
+            byte[] packetFormat = formatingPacket(BitConverter.GetBytes(format));
 
             // create data
             byte[] packetData = formatingPacket(data);

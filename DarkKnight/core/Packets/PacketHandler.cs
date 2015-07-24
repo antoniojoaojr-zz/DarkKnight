@@ -1,5 +1,4 @@
-﻿using DarkKnight.Crypt;
-using DarkKnight.Data;
+﻿using DarkKnight.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,7 +26,7 @@ using System.Text;
  * ************************************************************/
 #endregion
 
-namespace DarkKnight.core
+namespace DarkKnight.core.Packets
 {
     class PacketHandler : Packet
     {
@@ -44,7 +43,7 @@ namespace DarkKnight.core
                 for (int i = 0; i < _packet.Length; i++)
                     invalidData += _packet[i] + " ";
 
-                _format = new PacketFormat("???");
+                _format = FormatController.getFormatName((int)DefaultFormat.InvalidPackage);
                 _packet = new byte[] { };
             }
         }
@@ -98,7 +97,10 @@ namespace DarkKnight.core
                 Array.Copy(packet, lengthFormatPosition + 1, format, 0, lengthFormat);
                 Array.Copy(packet, lengthDataPosition + 1, _packet, 0, lengthData);
 
-                _format = new PacketFormat(Encoding.UTF8.GetString(format));
+                if (BitConverter.IsLittleEndian)
+                    Array.Reverse(format);
+
+                _format = FormatController.getFormatName(BitConverter.ToInt32(format, 0));
 
                 packetHandled.Add(this);
 

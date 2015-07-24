@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkKnight.core.Packets;
+using System;
 using System.Text;
 
 #region License Information
@@ -31,7 +32,7 @@ namespace DarkKnight.Data
         /// <summary>
         /// The format of this packet
         /// </summary>
-        protected PacketFormat _format = new PacketFormat("???");
+        protected string _format = FormatController.getFormatName((int)DefaultFormat.InvalidPackage);
 
         /// <summary>
         /// The data to process of this packet
@@ -41,7 +42,7 @@ namespace DarkKnight.Data
         /// <summary>
         /// Get the format of this packet
         /// </summary>
-        public PacketFormat format
+        public string format
         {
             get { return _format; }
         }

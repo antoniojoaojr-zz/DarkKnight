@@ -1,4 +1,5 @@
-﻿using DarkKnight.Data;
+﻿using DarkKnight.core.Packets;
+using DarkKnight.Data;
 using DarkKnight.Network;
 using System;
 using System.Net.Sockets;
@@ -144,7 +145,7 @@ namespace DarkKnight.core
         {
             // we make a finally validation of the packet in the server
             // if the packet is invalid, just print a log in the output
-            if (packet.format.getStringFormat == "???" && packet.data.Length == 0)
+            if (packet.format == DefaultFormat.InvalidPackage.ToString() && packet.data.Length == 0)
             {
                 DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + " - " + listen.Id + "] sended a invalid package, see package received in WARNING logs");
                 DarkKnight.Utils.Log.Write("Client [" + listen.IPAddress.ToString() + "] invalid packet - [ " + packet.invalidData + " ]", Utils.LogLevel.WARNING, false);

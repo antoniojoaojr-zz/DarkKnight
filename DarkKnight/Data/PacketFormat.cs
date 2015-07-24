@@ -1,5 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using DarkKnight.core.Packets;
+using System;
+using System.Collections.Generic;
 
 #region License Information
 /* ************************************************************
@@ -27,100 +28,29 @@ using System.Text;
 namespace DarkKnight.Data
 {
     /// <summary>
-    /// Formats that are used internally by DarkKnight
-    /// </summary>
-    public enum DefaultFormat
-    {
-        /// <summary>
-        /// New radius information stream
-        /// </summary>
-        JRadiusStream,
-
-        /// <summary>
-        /// New view information stream
-        /// </summary>
-        JViewStream,
-
-        /// <summary>
-        /// New target information stream
-        /// </summary>
-        JTargetStream,
-
-        /// <summary>
-        /// Exit target information
-        /// </summary>
-        JExitTargetStream
-    }
-
-    /// <summary>
     /// Class represents the format of a packet
     /// </summary>
     public class PacketFormat
     {
         /// <summary>
-        /// Get a name of a DarkKnight packet format
+        /// Register a enum format in the server
         /// </summary>
-        /// <param name="format">DarkKnight.Data.DarkKnightFormat enum format</param>
-        /// <returns>string of name of enum</returns>
-        public static PacketFormat Format(DefaultFormat format)
+        /// <param name="enumObject">Enum object format</param>
+        /// <exception cref="System.Exception">Enum format as been registered previously</exception>
+        public static void registerEnum(Enum enumObject)
         {
-            return new PacketFormat(Enum.GetName(typeof(Data.DefaultFormat), format));
-        }
-
-        private string format = null;
-
-        /// <summary>
-        /// Sets the format of a packet passing as parameter string
-        /// </summary>
-        /// <param name="name">The name of format</param>
-        public PacketFormat(string name)
-        {
-            if (name.Length < 3)
-                throw new Exception("The min length of name is 3");
-
-            format = name;
+            FormatController.registerEnumFormat(enumObject);
         }
 
         /// <summary>
-        /// Gets the packet format in a string
+        /// Register a Dictionary<string,int> for a format in the server
         /// </summary>
-        public string getStringFormat
+        /// <param name="dicObject">System.Collection.Generic.Dictionary<string,int> object</param>
+        /// <exception cref="System.Exception">Dictionary format as been registered previously</exception>
+        public static void registerDictionary(Dictionary<string, int> dicObject)
         {
-            get
-            {
-                if (format == null)
-                    throw new Exception("The format is not setted");
-
-                return format;
-            }
+            FormatController.registerDictionaryFormat(dicObject);
         }
 
-        /// <summary>
-        /// Gets the packet format in a array of char
-        /// </summary>
-        public char[] getCharArrayFormat
-        {
-            get
-            {
-                if (format == null)
-                    throw new Exception("the format is not setted");
-
-                return format.ToCharArray();
-            }
-        }
-
-        /// <summary>
-        /// Gets the packet format in a array of byte
-        /// </summary>
-        public byte[] getByteArrayFormat
-        {
-            get
-            {
-                if (format == null)
-                    throw new Exception("the format is not setted");
-
-                return Encoding.UTF8.GetBytes(format);
-            }
-        }
     }
 }

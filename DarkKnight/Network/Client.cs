@@ -1,7 +1,7 @@
 ﻿using DarkKnight.core;
 using DarkKnight.core.Network;
+using DarkKnight.core.Packets;
 using DarkKnight.Crypt;
-using DarkKnight.Data;
 using DarkKnight.Utils;
 using Newtonsoft.Json;
 using System;
@@ -153,7 +153,7 @@ namespace DarkKnight.Network
         /// Send a mapped with format to the client
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
-        public void SendFormated(PacketFormat format)
+        public void SendFormated(object format)
         {
             SendEncodingPacket(new PacketCreator(format, new byte[] { }));
         }
@@ -163,7 +163,7 @@ namespace DarkKnight.Network
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the int to send</param>
-        public void SendFormated(PacketFormat format, byte[] toSend)
+        public void SendFormated(object format, byte[] toSend)
         {
             SendEncodingPacket(new PacketCreator(format, toSend));
         }
@@ -173,7 +173,7 @@ namespace DarkKnight.Network
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the string to send</param>
-        public void SendFormatedString(PacketFormat format, string toSend)
+        public void SendFormatedString(object format, string toSend)
         {
             SendFormated(format, Encoding.UTF8.GetBytes(toSend));
         }
@@ -183,7 +183,7 @@ namespace DarkKnight.Network
         /// </summary>
         /// <param name="format">DarkKnight.Data.PacketFormat object</param>
         /// <param name="toSend">the object to send</param>
-        public void SendFormatedObject(PacketFormat format, object toSend)
+        public void SendFormatedObject(object format, object toSend)
         {
             if (!toSend.GetType().Equals(typeof(ObjectStream)))
             {

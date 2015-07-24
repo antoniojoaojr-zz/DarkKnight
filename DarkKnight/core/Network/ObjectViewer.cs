@@ -44,7 +44,7 @@ namespace DarkKnight.core.Network
         /// <param name="client">DarkKnight.Network.Client object</param>
         public void EnterRadius(Client client)
         {
-            client.SendFormatedObject(PacketFormat.Format(DefaultFormat.JRadiusStream), new ObjectStream() { Id = Id, ObjectData = _dataRadius });
+            client.SendFormatedObject(DefaultFormat.JRadiusStream, new ObjectStream() { Id = Id, ObjectData = _dataRadius });
 
             Radius.Add(client);
         }
@@ -65,7 +65,7 @@ namespace DarkKnight.core.Network
         /// <param name="dataRadius"></param>
         protected void UpdateRadius(Dictionary<string, object> dataRadius)
         {
-            Radius.SendFormatedObject(PacketFormat.Format(DefaultFormat.JRadiusStream), new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataRadius, dataRadius) });
+            Radius.SendFormatedObject(DefaultFormat.JRadiusStream, new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataRadius, dataRadius) });
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DarkKnight.core.Network
         /// <param name="client">DarkKnight.Network.Client object</param>
         public void EnterView(Client client)
         {
-            client.SendFormatedObject(PacketFormat.Format(DefaultFormat.JViewStream), new ObjectStream() { Id = Id, ObjectData = _dataView });
+            client.SendFormatedObject(DefaultFormat.JViewStream, new ObjectStream() { Id = Id, ObjectData = _dataView });
 
             Viewer.Add(client);
         }
@@ -94,7 +94,7 @@ namespace DarkKnight.core.Network
         /// <param name="dataView"></param>
         protected void UpdateView(Dictionary<string, object> dataView)
         {
-            Viewer.SendFormatedObject(PacketFormat.Format(DefaultFormat.JViewStream), new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataView, dataView) });
+            Viewer.SendFormatedObject(DefaultFormat.JViewStream, new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataView, dataView) });
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace DarkKnight.core.Network
         /// <param name="client">DarkKnight.Network.Client object</param>
         public void EnterTarget(Client client)
         {
-            client.SendFormatedObject(PacketFormat.Format(DefaultFormat.JTargetStream), new ObjectStream() { Id = Id, ObjectData = _dataTarget });
+            client.SendFormatedObject(DefaultFormat.JTargetStream, new ObjectStream() { Id = Id, ObjectData = _dataTarget });
 
             Target.Add(client);
         }
@@ -115,7 +115,7 @@ namespace DarkKnight.core.Network
         public void ExitTarget(Client client)
         {
             if (Target.Contains(client))
-                client.SendFormatedObject(PacketFormat.Format(DefaultFormat.JExitTargetStream), new ObjectStream() { Id = Id });
+                client.SendFormatedObject(DefaultFormat.JExitTargetStream, new ObjectStream() { Id = Id });
 
             Target.Remove(client);
         }
@@ -126,7 +126,7 @@ namespace DarkKnight.core.Network
         /// <param name="dataTarget"></param>
         public void UpdateTarget(Dictionary<string, object> dataTarget)
         {
-            Target.SendFormatedObject(PacketFormat.Format(DefaultFormat.JTargetStream), new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataTarget, dataTarget) });
+            Target.SendFormatedObject(DefaultFormat.JTargetStream, new ObjectStream() { Id = Id, ObjectData = UpdateMethods(ref _dataTarget, dataTarget) });
         }
 
         private Dictionary<string, object> UpdateMethods(ref Dictionary<string, object> objectStart, Dictionary<string, object> objectCompare)
