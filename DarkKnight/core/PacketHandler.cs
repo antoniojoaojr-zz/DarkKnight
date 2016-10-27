@@ -100,7 +100,7 @@ namespace DarkKnight.core
 
                 _format = new PacketFormat(Encoding.UTF8.GetString(format));
 
-                packetHandled.Add(this);
+                packetHandled.Add((Packet)MemberwiseClone());
 
                 if (packet.Length == totalDataLength)
                     return true;

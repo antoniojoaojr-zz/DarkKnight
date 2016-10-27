@@ -32,6 +32,8 @@ namespace DarkKnight.core
     {
         private static Dictionary<int, ClientSignal> _clientSignal = new Dictionary<int, ClientSignal>();
 
+        private static Object locker = new Object();
+
         private Client _client;
         private DateTime time = DateTime.Now.AddMilliseconds(2400);
 
@@ -47,7 +49,7 @@ namespace DarkKnight.core
         public static void udpate(Client client)
         {
             // we garanted one thread per time
-            lock (client)
+            lock (ThreadLocker.sync("ClientSignal::update"))
             {
                 if (!_clientSignal.ContainsKey(client.Id))
                     _clientSignal[client.Id] = new ClientSignal(client);

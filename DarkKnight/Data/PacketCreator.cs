@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 #region License Information
 /* ************************************************************
@@ -87,45 +85,39 @@ namespace DarkKnight.Data
         private byte[] formatingPacket(byte[] data)
         {
             // we get a dynamic array stored a length information in packet
-            List<byte> lengthData = lengthList(data.Length);
+            byte[] lengthData = lengthList(data.Length);
 
             // we create a dataFormated with length:
             // length of length data + length of length data information + 1 (for position final length information) 
-            byte[] packetData = new byte[data.Length + lengthData.Count + 1];
+            byte[] packetData = new byte[data.Length + lengthData.Length + 1];
 
             // convert the dynamic list to the dataFormated
-            for (int i = 0; i < lengthData.Count; i++)
+            for (int i = 0; i < lengthData.Length; i++)
                 packetData[i] = lengthData[i];
 
             // add the final length information
-            packetData[lengthData.Count] = 0;
+            packetData[lengthData.Length] = 0;
 
             // if length is one, return
             if (packetData.Length < 2)
                 return packetData;
 
             // copy the data to data formated
-            Array.Copy(data, 0, packetData, lengthData.Count + 1, data.Length);
+            Array.Copy(data, 0, packetData, lengthData.Length + 1, data.Length);
 
             // return the data formated
             return packetData;
         }
 
-        private List<byte> lengthList(int _length)
+        private byte[] lengthList(int _length)
         {
             int length = _length;
-            List<byte> lengthData = new List<byte>();
-            // we storing the length of data when, length is more than zero
-            while (length > 0)
+            byte[] lengthData = new byte[(int)Math.Ceiling(_length / 127.0f)];
+
+            for (int i = 0; length > 0; i++)
             {
-                // getting the length to store
-                byte lengthStore = (length > 127) ? (byte)127 : (byte)length;
-
-                // store the length
-                lengthData.Add(lengthStore);
-
-                // discount in length
-                length -= lengthStore;
+                lengthData[i] = (length > 127) ? (byte)127 : (byte)length;
+                length -= lengthData[i];
             }
 
             return lengthData;

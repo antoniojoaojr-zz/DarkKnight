@@ -31,6 +31,7 @@ namespace DarkKnight
         private int _ServerPort = 2111;
         private int _backlog = 50;
         private int _MaxThread = 4;
+        private int _MaxUnauthenticatedAccept = 3;
 
         /// <summary>
         /// The higher the number, the less likely a row of access to your application.
@@ -76,6 +77,16 @@ namespace DarkKnight
             {
                 _backlog = value;
             }
+        }
+
+        /// <summary>
+        /// Setting the maximum times a client try authenticated a connection
+        /// if client can't authenticated connection in this times not accept more connection from this client
+        /// </summary>
+        public int MaxUnauthenticatedAccept
+        {
+            get { return _MaxUnauthenticatedAccept; }
+            set { _MaxUnauthenticatedAccept = value; }
         }
 
     }

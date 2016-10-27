@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkKnight.Network;
+using System;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -31,7 +32,7 @@ namespace DarkKnight.core
     class ServerListen
     {
         private int nextClientId = 1000;
-
+        
         /// <summary>
         /// The method is responsible for starting a server on a specific port
         /// </summary>
@@ -73,13 +74,19 @@ namespace DarkKnight.core
                 Socket client = server.EndAccept(Result);
 
                 // one thread per time
-                lock (server)
+                lock (ThreadLocker.sync("ServerListen::acceptConnection"))
                 {
                     nextClientId++;
                 }
 
-                // we add the new connected client to the listener channel
-                new ClientListen(client, nextClientId);
+                if (UnauthenticatedTable.get(((IPEndPoint)client.RemoteEndPoint).Address.ToString()) >= ServerController.config.MaxUnauthenticatedAccept)
+                {
+                    client.Close();
+                }
+                else {
+                    // we add the new connected client to the listener channel
+                    new ClientListen(client, nextClientId);
+                }
             }
             catch (Exception ex)
             {

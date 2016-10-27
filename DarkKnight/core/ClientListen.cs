@@ -159,7 +159,7 @@ namespace DarkKnight.core
 
         private byte[] getReceivedPacket(byte[] buffer, int size)
         {
-            lock (buffer)
+            lock (ThreadLocker.sync("ClientListen::getReceivedPacket"))
             {
                 // security of return if the size received is zero
                 if (size == 0)

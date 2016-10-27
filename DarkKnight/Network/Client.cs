@@ -208,7 +208,7 @@ namespace DarkKnight.Network
         public void Close()
         {
             // one thread per time, prevent two or more thread call Close() in same time and generate duplicate notifications
-            lock (client)
+            lock (ThreadLocker.sync("Client::Close"))
             {
                 if (!Connected)
                     return;

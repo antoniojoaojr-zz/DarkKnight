@@ -1,4 +1,4 @@
-﻿using DarkKnight.Data;
+﻿using DarkKnight.core;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -70,7 +70,7 @@ namespace DarkKnight.Network
             queueData.Enqueue(packet);
 
             // if no thread working to send data
-            lock (client)
+            lock (ThreadLocker.sync("DataTransport::Send"))
             {
                 if (!asynSending)
                     BeginSend(queueData.Dequeue());
