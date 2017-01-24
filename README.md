@@ -10,7 +10,7 @@ At the moment the focus is on branch "dev" is where you'll find better informati
 
 Example to use:
 
-```sh
+```c#
     /// <summary>
     /// your classe needs be implement DarkKnight.DKService
     /// </summary>
