@@ -63,6 +63,7 @@ Example to use:
             if(packet.dataString == "CONNECTION")
             {
                 client.SendFormatedString(new PacketFormat("Hello"), "World!");
+                // PacketFormat is a classe from DarkKnight.Data namespace
             }
         }
     }
