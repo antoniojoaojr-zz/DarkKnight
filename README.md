@@ -33,6 +33,7 @@ Example to use:
             // you customize your code here
             // example
             // remove the client from your controller clients connecteds
+            Console.WriteLine(client.Id + " with ip: "+client.IPAddress.toString()+" is desconnected of the server");            
         }
 
         /// <summary>
@@ -44,6 +45,7 @@ Example to use:
             // you customize your code here
             // example
             // add the Client object in your controller of clients connecteds
+            Console.WriteLine(client.Id + " with ip: "+client.IPAddress.toString()+" is connected to the server");
         }
 
         /// <summary>
