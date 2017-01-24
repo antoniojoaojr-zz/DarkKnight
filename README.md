@@ -16,6 +16,14 @@ Example to use:
     /// </summary>
     class Example : DarkKnight.DKService
     {
+        public Example()
+        {
+            // in the constructor of class
+            // you set application connection controler
+            setApplication(this);
+            // in this model, the Example class is controller
+        }
+        
         /// <summary>
         /// This class is called automatic when the client connection is closed
         /// </summary>
