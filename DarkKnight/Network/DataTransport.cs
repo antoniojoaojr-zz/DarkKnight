@@ -66,14 +66,26 @@ namespace DarkKnight.Network
             if (packet.Length == 0 || packet == null)
                 return;
 
-            // add the data in the queue
-            queueData.Enqueue(packet);
-
-            // if no thread working to send data
+            // one thread per time
             lock (ThreadLocker.sync("DataTransport::Send"))
             {
-                if (!asynSending)
+                // test the packet is a fix thread concorrent hack work
+                if (packet.Length != 2 || (packet[0] != 9 || packet[1] != 1))
+                {
+                    // not packet thread concorrent 
+                    // add the data in the queue
+                    queueData.Enqueue(packet);
+                }
+
+                // if asynSending is false and have data to send
+                if (!asynSending && queueData.Count > 0)
+                {
+                    // we set to true to say that we are working with sending
+                    asynSending = true;
+
+                    // start sending the packets
                     BeginSend(queueData.Dequeue());
+                }
             }
         }
 
@@ -82,9 +94,6 @@ namespace DarkKnight.Network
             // try send data to socket client
             try
             {
-                // we set to true to say that we are working with sending
-                asynSending = true;
-
                 // start sending data to the socket
                 socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendAsyncResult), socket);
             }
@@ -102,7 +111,7 @@ namespace DarkKnight.Network
         /// <param name="ar"></param>
         private void SendAsyncResult(IAsyncResult ar)
         {
-            // retrieve the send socekt object
+            // retrieve the send socket object
             Socket result = (Socket)ar.AsyncState;
 
             try
@@ -121,6 +130,10 @@ namespace DarkKnight.Network
                     // if not have more data in queue
                     // flush asynseding
                     asynSending = false;
+
+                    // fix concorrent thread work
+                    // sending a hacked packet for testing Sending is not precaried in a concorrent thread
+                    Send(new byte[] { 9, 1 });
                 }
             }
             catch
