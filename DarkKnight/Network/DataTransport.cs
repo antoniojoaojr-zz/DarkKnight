@@ -70,7 +70,7 @@ namespace DarkKnight.Network
             lock (ThreadLocker.sync("DataTransport::Send"))
             {
                 // test the packet is a fix thread concorrent hack work
-                if (packet.Length != 2 || (packet[0] != 9 || packet[1] != 1))
+                if (packet.Length != 1 || packet[0] != 9)
                 {
                     // not packet thread concorrent 
                     // add the data in the queue
@@ -133,7 +133,7 @@ namespace DarkKnight.Network
 
                     // fix concorrent thread work
                     // sending a hacked packet for testing Sending is not precaried in a concorrent thread
-                    Send(new byte[] { 9, 1 });
+                    Send(new byte[] { 9 });
                 }
             }
             catch
